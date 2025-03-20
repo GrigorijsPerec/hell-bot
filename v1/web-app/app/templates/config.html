@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Конфигурация{% endblock %}
+{% block content %}
+<h2>Конфигурация</h2>
+<form method="POST">
+    <h3>Привязка ролей к каналам</h3>
+    <div id="roleChannelMap">
+        {% if config.role_channel_map %}
+            {% for role, channels in config.role_channel_map.items() %}
+                <div class="mb-3 role-channel-pair">
+                    <label class="form-label">Роль ID</label>
+                    <input type="number" name="role_{{ loop.index }}" class="form-control" value="{{ role }}">
+                    <label class="form-label">Каналы (через запятую)</label>
+                    <input type="text" name="channels_{{ loop.index }}" class="form-control" value="{{ channels | join(',') }}">
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <button type="button" class="btn btn-secondary" id="addPair">Добавить привязку</button>
+
+    <script>
+    document.getElementById('addPair').addEventListener('click', function(){
+        const container = document.getElementById('roleChannelMap');
+        const index = container.getElementsByClassName('role-channel-pair').length + 1;
+        const div = document.createElement('div');
+        div.className = 'mb-3 role-channel-pair';
+        div.innerHTML = `
+            <label class="form-label">Роль ID</label>
+            <input type="number" name="role_${index}" class="form-control">
+            <label class="form-label">Каналы (через запятую)</label>
+            <input type="text" name="channels_${index}" class="form-control">
+        `;
+        container.appendChild(div);
+    });
+    </script>
+
+    <div class="mb-3">
+        <label for="FINE_CHANNEL_ID" class="form-label">FINE_CHANNEL_ID</label>
+        <input type="number" class="form-control" id="FINE_CHANNEL_ID" name="FINE_CHANNEL_ID" value="{{ config.FINE_CHANNEL_ID }}">
+    </div>
+    <div class="mb-3">
+        <label for="NOTIFY_CHANNEL_ID" class="form-label">NOTIFY_CHANNEL_ID</label>
+        <input type="number" class="form-control" id="NOTIFY_CHANNEL_ID" name="NOTIFY_CHANNEL_ID" value="{{ config.NOTIFY_CHANNEL_ID }}">
+    </div>
+    <div class="mb-3">
+        <label for="LOG_CHANNEL_ID" class="form-label">LOG_CHANNEL_ID</label>
+        <input type="number" class="form-control" id="LOG_CHANNEL_ID" name="LOG_CHANNEL_ID" value="{{ config.LOG_CHANNEL_ID }}">
+    </div>
+    <div class="mb-3">
+        <label for="ROLE_ID" class="form-label">ROLE_ID</label>
+        <input type="number" class="form-control" id="ROLE_ID" name="ROLE_ID" value="{{ config.ROLE_ID }}">
+    </div>
+    <div class="mb-3">
+        <label for="CONTENT_MAKER_ROLE_ID" class="form-label">CONTENT_MAKER_ROLE_ID</label>
+        <input type="number" class="form-control" id="CONTENT_MAKER_ROLE_ID" name="CONTENT_MAKER_ROLE_ID" value="{{ config.CONTENT_MAKER_ROLE_ID }}">
+    </div>
+    <div class="mb-3">
+        <label for="FINANCIER_ROLE_ID" class="form-label">FINANCIER_ROLE_ID</label>
+        <input type="number" class="form-control" id="FINANCIER_ROLE_ID" name="FINANCIER_ROLE_ID" value="{{ config.FINANCIER_ROLE_ID }}">
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Обновить конфигурацию</button>
+    
+</form>
+{% endblock %}

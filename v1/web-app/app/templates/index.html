@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Панель управления{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Панель управления ботом</h1>
+    <p class="lead">Общее количество транзакций: {{ transactions_count }}</p>
+    <p class="lead">Количество пользователей с балансом: {{ balances_count }}</p>
+    <hr class="my-4">
+    <p>Используйте навигационное меню для перехода к другим разделам.</p>
+</div>
+{% endblock %}

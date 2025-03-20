@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Сообщения{% endblock %}
+{% block content %}
+<h2>Сообщения</h2>
+<form method="POST">
+    {% for key, value in messages.items() %}
+    <div class="mb-3">
+        <label for="{{ key }}" class="form-label">{{ key }}</label>
+        <textarea class="form-control" id="{{ key }}" name="{{ key }}" rows="2">{{ value }}</textarea>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Обновить сообщения</button>
+</form>
+{% endblock %}

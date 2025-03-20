@@ -1,0 +1,1243 @@
+2025-03-14 20:32:24,857 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-14 20:32:24,861 - INFO - logging in using static token
+2025-03-14 20:32:26,100 - INFO - Shard ID None has connected to Gateway (Session ID: b18ea3b3123329be647cb418c5051e3a).
+2025-03-14 20:32:28,182 - INFO - Бот Штрафы#9827 запущен!
+2025-03-14 21:23:42,081 - ERROR - Attempting a reconnect in 1.17s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:23:43,418 - ERROR - Attempting a reconnect in 3.44s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:23:46,886 - ERROR - Attempting a reconnect in 4.29s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:23:51,198 - ERROR - Attempting a reconnect in 7.66s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:23:58,879 - ERROR - Attempting a reconnect in 19.19s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:24:18,094 - ERROR - Attempting a reconnect in 4.37s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:24:22,499 - ERROR - Attempting a reconnect in 110.34s
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1362, in _create_direct_connection
+    hosts = await self._resolve_host(host, port, traces=traces)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 995, in _resolve_host
+    return await asyncio.shield(resolved_host_task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1026, in _resolve_host_with_throttle
+    addrs = await self._resolver.resolve(host, port, family=self._family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\resolver.py", line 36, in resolve
+    infos = await self._loop.getaddrinfo(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Python313\Lib\asyncio\base_events.py", line 934, in getaddrinfo
+    return await self.run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, getaddr_func, host, port, family, type, proto, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Python313\Lib\socket.py", line 975, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 701, in connect
+    self.ws = await asyncio.wait_for(coro, timeout=60.0)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\gateway.py", line 375, in from_client
+    socket = await client.http.ws_connect(str(url))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 554, in ws_connect
+    return await self.__session.ws_connect(url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 1004, in _ws_connect
+    resp = await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+    ...<11 lines>...
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        req, traces=traces, timeout=real_timeout
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\aiohttp\connector.py", line 1368, in _create_direct_connection
+    raise ClientConnectorDNSError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorDNSError: Cannot connect to host gateway-us-east1-d.discord.gg:443 ssl:default [getaddrinfo failed]
+2025-03-14 21:26:13,202 - INFO - Shard ID None session has been invalidated.
+2025-03-14 21:26:18,880 - INFO - Shard ID None has connected to Gateway (Session ID: cfc2fe1beddb055e03b3b762a5fd4653).
+2025-03-14 21:26:20,937 - INFO - Бот Штрафы#9827 запущен!
+2025-03-14 21:50:52,306 - INFO - Shard ID None has successfully RESUMED session cfc2fe1beddb055e03b3b762a5fd4653.
+2025-03-14 23:38:40,347 - INFO - Shard ID None has successfully RESUMED session cfc2fe1beddb055e03b3b762a5fd4653.
+2025-03-15 00:06:50,660 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-15 00:06:50,683 - INFO - logging in using static token
+2025-03-15 00:06:51,792 - INFO - Shard ID None has connected to Gateway (Session ID: 6a93d5855a6c5fd4e024b06bc9927cda).
+2025-03-15 00:06:53,836 - INFO - Бот Штрафы#9827 запущен!
+2025-03-15 00:11:23,089 - ERROR - Ignoring exception in command add_channel_role
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 697, in transform
+    raise MissingRequiredArgument(param)
+discord.ext.commands.errors.MissingRequiredArgument: role is a required argument that is missing.
+2025-03-15 00:13:19,720 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-15 00:13:19,728 - INFO - logging in using static token
+2025-03-15 00:13:20,615 - INFO - Shard ID None has connected to Gateway (Session ID: 192941b658fffe57d14430027a2a9d5d).
+2025-03-15 00:13:22,660 - INFO - Бот Штрафы#9827 запущен!
+2025-03-15 00:17:58,511 - INFO - Штраф выдан: haldorrgen | Сумма: 50000 | Причина: k | Выдал: haldorrgen
+2025-03-15 00:42:29,348 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-15 00:42:29,377 - INFO - logging in using static token
+2025-03-15 00:42:30,315 - INFO - Shard ID None has connected to Gateway (Session ID: 3f476d47754ee1b3852c3a2fa0ed8105).
+2025-03-15 00:42:32,357 - INFO - Бот Штрафы#9827 запущен!
+2025-03-15 00:43:16,008 - ERROR - Ignoring exception in command balance deposit
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1650, in invoke
+    await ctx.invoked_subcommand.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1326, in _actual_conversion
+    return await converter().convert(ctx, argument)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 281, in convert
+    raise MemberNotFound(argument)
+discord.ext.commands.errors.MemberNotFound: Member "@\u200beveryone" not found.
+2025-03-17 20:05:14,442 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:05:14,474 - INFO - logging in using static token
+2025-03-17 20:05:15,613 - INFO - Shard ID None has connected to Gateway (Session ID: aa16d7ae5da5a9987a7d1a98209420cf).
+2025-03-17 20:05:17,670 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:12:42,968 - ERROR - Ignoring exception in command fine
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1335, in _actual_conversion
+    return converter(argument)
+ValueError: invalid literal for int() with base 10: '500k'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1344, in _actual_conversion
+    raise BadArgument(f'Converting to "{name}" failed for parameter "{param.name}".') from exc
+discord.ext.commands.errors.BadArgument: Converting to "int" failed for parameter "amount".
+2025-03-17 20:26:03,764 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:26:03,768 - INFO - logging in using static token
+2025-03-17 20:26:04,730 - INFO - Shard ID None has connected to Gateway (Session ID: 6e5f0b2c43727623f9f718437c1d830a).
+2025-03-17 20:26:06,792 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:26:16,399 - ERROR - Ignoring exception in command fine
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1335, in _actual_conversion
+    return converter(argument)
+ValueError: invalid literal for int() with base 10: '500k'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1344, in _actual_conversion
+    raise BadArgument(f'Converting to "{name}" failed for parameter "{param.name}".') from exc
+discord.ext.commands.errors.BadArgument: Converting to "int" failed for parameter "amount".
+2025-03-17 20:28:31,943 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:28:31,947 - INFO - logging in using static token
+2025-03-17 20:28:32,899 - INFO - Shard ID None has connected to Gateway (Session ID: b62c2f4030dd28a145b06a1811fc7b4f).
+2025-03-17 20:28:34,974 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:29:10,237 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:29:10,242 - INFO - logging in using static token
+2025-03-17 20:29:11,189 - INFO - Shard ID None has connected to Gateway (Session ID: 1cab1ee75b94ee0ca91924c8d5bada4b).
+2025-03-17 20:29:13,236 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:30:18,804 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:30:18,809 - INFO - logging in using static token
+2025-03-17 20:30:20,160 - INFO - Shard ID None has connected to Gateway (Session ID: eab5e7ead4af356908a780343f68cda7).
+2025-03-17 20:30:22,278 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:31:02,442 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:31:02,446 - INFO - logging in using static token
+2025-03-17 20:31:03,770 - INFO - Shard ID None has connected to Gateway (Session ID: adad8922c4642bef1caffd540bd96be1).
+2025-03-17 20:31:05,830 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:40:12,728 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 20:40:12,732 - INFO - logging in using static token
+2025-03-17 20:40:13,677 - INFO - Shard ID None has connected to Gateway (Session ID: 26c5e30a0f41a289d452ee281ec5b0ca).
+2025-03-17 20:40:15,715 - INFO - Бот Штрафы#9827 запущен!
+2025-03-17 20:40:37,859 - INFO - Штраф выдан: andrei2.01738 | Сумма: 500000 | Причина: флуд на контенте (15.03) | Выдал: haldorrgen
+2025-03-17 20:48:29,902 - ERROR - Ignoring exception in command add_channel_role
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 697, in transform
+    raise MissingRequiredArgument(param)
+discord.ext.commands.errors.MissingRequiredArgument: role is a required argument that is missing.
+2025-03-17 21:03:38,408 - ERROR - Ignoring exception in command add_channel_role
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 845, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1326, in _actual_conversion
+    return await converter().convert(ctx, argument)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 550, in convert
+    return GuildChannelConverter._resolve_channel(ctx, argument, 'text_channels', discord.TextChannel)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 499, in _resolve_channel
+    raise ChannelNotFound(argument)
+discord.ext.commands.errors.ChannelNotFound: Channel "1332396327128141836" not found.
+2025-03-17 21:42:33,290 - INFO - Shard ID None has successfully RESUMED session 26c5e30a0f41a289d452ee281ec5b0ca.
+2025-03-17 23:09:19,090 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-17 23:09:19,102 - INFO - logging in using static token
+2025-03-17 23:09:20,221 - INFO - Shard ID None has connected to Gateway (Session ID: 471512358dcee8430e2bf16fdead5193).
+2025-03-17 23:09:22,265 - INFO - Бот Штрафы#9827 запущен!
+2025-03-18 01:32:46,662 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:32:46,691 - INFO - logging in using static token
+2025-03-18 01:32:47,716 - INFO - Shard ID None has connected to Gateway (Session ID: 43a25b33c6498efe624728309869cd59).
+2025-03-18 01:32:49,753 - INFO - Бот Штрафы#9827 запущен!
+2025-03-18 01:36:57,676 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:36:57,681 - INFO - logging in using static token
+2025-03-18 01:36:58,652 - INFO - Shard ID None has connected to Gateway (Session ID: c4390c673fa8815fc2ff291148f5d5fc).
+2025-03-18 01:37:00,665 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 01:38:12,405 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:38:12,409 - INFO - logging in using static token
+2025-03-18 01:38:13,353 - INFO - Shard ID None has connected to Gateway (Session ID: 5e4f01f471a7051b7636cb86bad15dee).
+2025-03-18 01:38:15,366 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 01:47:42,715 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:47:42,719 - INFO - logging in using static token
+2025-03-18 01:47:43,634 - INFO - Shard ID None has connected to Gateway (Session ID: 4ebb1bb6b6b89bc8c854a47f583924f7).
+2025-03-18 01:47:45,845 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 01:48:13,316 - INFO - Штраф выдан: haldorrgen | Сумма: 500000 | Причина: test1 | Выдал: haldorrgen
+2025-03-18 01:50:15,819 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:50:15,825 - INFO - logging in using static token
+2025-03-18 01:50:17,040 - INFO - Shard ID None has connected to Gateway (Session ID: 0bd485953380d63e88afa01bdaf5d0a1).
+2025-03-18 01:50:19,085 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 01:50:30,788 - INFO - Штраф выдан: haldorrgen | Сумма: 5000000 | Причина: test2 | Выдал: haldorrgen
+2025-03-18 01:51:00,514 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 01:51:00,519 - INFO - logging in using static token
+2025-03-18 01:51:01,469 - INFO - Shard ID None has connected to Gateway (Session ID: ca99a84a891e8bc4343ba2559b9bd699).
+2025-03-18 01:51:03,518 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 01:51:27,018 - INFO - Штраф выдан: haldorrgen | Сумма: 5000000 | Причина: test3 | Выдал: haldorrgen
+2025-03-18 04:21:21,514 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 08:16:26,081 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 10:30:52,666 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 10:53:06,681 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 12:20:49,435 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 12:21:19,159 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 12:43:44,784 - INFO - Shard ID None has successfully RESUMED session ca99a84a891e8bc4343ba2559b9bd699.
+2025-03-18 22:07:25,624 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:07:25,638 - INFO - logging in using static token
+2025-03-18 22:07:26,594 - INFO - Shard ID None has connected to Gateway (Session ID: 629fd2ddd829d15b0c374dd769df2f8b).
+2025-03-18 22:07:28,656 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:09:44,239 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:09:44,243 - INFO - logging in using static token
+2025-03-18 22:09:45,187 - INFO - Shard ID None has connected to Gateway (Session ID: 7c349abe7e690dfb5dcef50f5e7d8c00).
+2025-03-18 22:09:47,249 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:20:53,197 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:20:53,202 - INFO - logging in using static token
+2025-03-18 22:20:54,351 - INFO - Shard ID None has connected to Gateway (Session ID: 1e89634c78fa600be3018cc4e99efa80).
+2025-03-18 22:20:56,379 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:21:05,135 - ERROR - Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "рудз" is not found
+2025-03-18 22:22:20,408 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:22:20,412 - INFO - logging in using static token
+2025-03-18 22:22:21,312 - INFO - Shard ID None has connected to Gateway (Session ID: da3d177eb8357855dbad8b879b57d9be).
+2025-03-18 22:22:23,359 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:27:00,445 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:27:00,450 - INFO - logging in using static token
+2025-03-18 22:27:01,541 - INFO - Shard ID None has connected to Gateway (Session ID: 144327dcd70ef638a879e7b5c145e7c0).
+2025-03-18 22:27:03,611 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:27:56,291 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:27:56,295 - INFO - logging in using static token
+2025-03-18 22:27:57,228 - INFO - Shard ID None has connected to Gateway (Session ID: 259afd73fafdf862d39327bfb6616954).
+2025-03-18 22:27:59,262 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:28:21,488 - ERROR - Ignoring exception in command send_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 860, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1326, in _actual_conversion
+    return await converter().convert(ctx, argument)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 281, in convert
+    raise MemberNotFound(argument)
+discord.ext.commands.errors.MemberNotFound: Member "123" not found.
+2025-03-18 22:28:38,826 - ERROR - Ignoring exception in command send_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 860, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1326, in _actual_conversion
+    return await converter().convert(ctx, argument)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 281, in convert
+    raise MemberNotFound(argument)
+discord.ext.commands.errors.MemberNotFound: Member "Привет," not found.
+2025-03-18 22:29:29,547 - ERROR - Ignoring exception in command send_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1021, in invoke
+    await self.prepare(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 938, in prepare
+    await self._parse_arguments(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 860, in _parse_arguments
+    transformed = await self.transform(ctx, param, attachments)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 715, in transform
+    return await run_converters(ctx, converter, argument, param)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1444, in run_converters
+    return await _actual_conversion(ctx, converter, argument, param)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 1326, in _actual_conversion
+    return await converter().convert(ctx, argument)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\converter.py", line 281, in convert
+    raise MemberNotFound(argument)
+discord.ext.commands.errors.MemberNotFound: Member "Привет," not found.
+2025-03-18 22:30:02,643 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:30:02,648 - INFO - logging in using static token
+2025-03-18 22:30:03,623 - INFO - Shard ID None has connected to Gateway (Session ID: 0893d4e3cb039218adafa1aa1d185e5a).
+2025-03-18 22:30:05,646 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:30:20,896 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 665, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-18 22:30:37,577 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:30:37,583 - INFO - logging in using static token
+2025-03-18 22:30:38,521 - INFO - Shard ID None has connected to Gateway (Session ID: 36b19797840765604ad9eac8fcaa9091).
+2025-03-18 22:30:40,648 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:30:57,672 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:30:57,675 - INFO - logging in using static token
+2025-03-18 22:30:58,880 - INFO - Shard ID None has connected to Gateway (Session ID: 973a73af28f02551e52893dd45c5ba98).
+2025-03-18 22:31:00,921 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:31:11,438 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 665, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-18 22:31:24,723 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:31:24,727 - INFO - logging in using static token
+2025-03-18 22:31:25,752 - INFO - Shard ID None has connected to Gateway (Session ID: f432d7f0975d1cff95c3e0ac72c7dc34).
+2025-03-18 22:31:27,798 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:31:36,325 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 665, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-18 22:31:58,378 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:31:58,388 - INFO - logging in using static token
+2025-03-18 22:31:59,571 - INFO - Shard ID None has connected to Gateway (Session ID: c09947c2424e5630c11c84d43048f9a8).
+2025-03-18 22:32:01,603 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:32:07,007 - ERROR - Ignoring exception in command m
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 235, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 650, in send_message
+    await ctx.message.delete()  # Удаляет команду через 2 секунды
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1029, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 244, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-18 22:33:24,237 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-18 22:33:24,241 - INFO - logging in using static token
+2025-03-18 22:33:25,357 - INFO - Shard ID None has connected to Gateway (Session ID: 38ba8b4dcef09712246a23dd960ff07a).
+2025-03-18 22:33:27,398 - INFO - Бот Секретарь#1905 запущен!
+2025-03-18 22:33:37,924 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 16:14:12,287 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 16:14:12,309 - INFO - logging in using static token
+2025-03-20 16:14:13,837 - INFO - Shard ID None has connected to Gateway (Session ID: 8cbec7c9a3f909b84aceed966e72a3fe).
+2025-03-20 16:14:15,894 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 20:06:29,828 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 20:06:29,842 - INFO - logging in using static token
+2025-03-20 20:06:31,089 - INFO - Shard ID None has connected to Gateway (Session ID: aee7d22c3ed45055cd0336fbeea00594).
+2025-03-20 20:06:33,141 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 20:07:51,052 - ERROR - Ignoring exception in command m
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 235, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 659, in send_message
+    await ctx.message.delete()  # Удаляет команду через 2 секунды
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1029, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 244, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 20:09:10,893 - ERROR - Ignoring exception in command m
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 235, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 647, in send_message
+    await member.send(f"\U0001f4e9 **Сообщение от {ctx.author.display_name}:**\n{message_text}")
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\abc.py", line 1594, in send
+    channel = await self._get_channel()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\member.py", line 414, in _get_channel
+    ch = await self.create_dm()
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\member.py", line 194, in general
+    return await getattr(self._user, x)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\user.py", line 569, in create_dm
+    data: DMChannelPayload = await state.http.start_private_message(self.id)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 762, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 40003): You are opening direct messages too fast.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1029, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 244, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: HTTPException: 400 Bad Request (error code: 40003): You are opening direct messages too fast.
+2025-03-20 20:11:41,017 - ERROR - Ignoring exception in command m
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 235, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 659, in send_message
+    await ctx.message.delete()  # Удаляет команду через 2 секунды
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 1029, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\ext\commands\core.py", line 244, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:00:50,672 - INFO - Shard ID None session has been invalidated.
+2025-03-20 21:01:09,141 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:01:09,146 - INFO - logging in using static token
+2025-03-20 21:01:10,114 - INFO - Shard ID None has connected to Gateway (Session ID: bb2d5dfd677ca65847bfc97300f854de).
+2025-03-20 21:01:12,162 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:02:35,003 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:02:35,008 - INFO - logging in using static token
+2025-03-20 21:02:36,284 - INFO - Shard ID None has connected to Gateway (Session ID: cf720c9b3a096b5cbb987e03c766e71f).
+2025-03-20 21:02:38,314 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:02:51,690 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:02:51,932 - INFO - Штраф выдан: noname3798 | Сумма: 5000000 | Причина: Иноактив | Выдал: 6gojo_satoru9
+2025-03-20 21:04:13,958 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:04:13,964 - INFO - logging in using static token
+2025-03-20 21:04:15,101 - INFO - Shard ID None has connected to Gateway (Session ID: 0335748873ba61877df95cffefbb3156).
+2025-03-20 21:04:17,132 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:04:33,508 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:05:28,144 - INFO - Штраф выдан: 6tcyrilla9 | Сумма: 500000 | Причина: test | Выдал: 6gojo_satoru9
+2025-03-20 21:05:29,424 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:06:16,649 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:06:58,693 - INFO - Штраф выдан: 6mahoraga9 | Сумма: 500000 | Причина: test | Выдал: 6gojo_satoru9
+2025-03-20 21:06:59,409 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:07:29,935 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:08:43,560 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:08:43,565 - INFO - logging in using static token
+2025-03-20 21:08:44,690 - INFO - Shard ID None has connected to Gateway (Session ID: e72b8e6699fb27206393fea6be511492).
+2025-03-20 21:08:46,766 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:09:00,796 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:09:00,956 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:09:02,191 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 675, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:09:23,977 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:09:23,983 - INFO - logging in using static token
+2025-03-20 21:09:25,017 - INFO - Shard ID None has connected to Gateway (Session ID: 10ca678e5ca1eda111c2503d9388671d).
+2025-03-20 21:09:27,067 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:09:37,701 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: testr | Выдал: haldorrgen
+2025-03-20 21:09:39,234 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: testr | Выдал: haldorrgen
+2025-03-20 21:09:39,489 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:12:41,292 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:12:41,300 - INFO - logging in using static token
+2025-03-20 21:12:42,298 - INFO - Shard ID None has connected to Gateway (Session ID: e5b56db9b70d32efc836011fae0161b8).
+2025-03-20 21:12:44,387 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:12:57,969 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:12:57,980 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:12:59,913 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    return  # Игнорируем сообщения ботов
+        ^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:14:46,541 - INFO - Штраф выдан: haldorrgen | Сумма: 123 | Причина: 123 | Выдал: haldorrgen
+2025-03-20 21:14:46,571 - INFO - Штраф выдан: haldorrgen | Сумма: 123 | Причина: 123 | Выдал: haldorrgen
+2025-03-20 21:14:48,662 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 680, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:16:53,064 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 680, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:17:13,911 - INFO - Штраф выдан: haldorrgen | Сумма: 550 | Причина: 550 | Выдал: haldorrgen
+2025-03-20 21:17:13,999 - INFO - Штраф выдан: haldorrgen | Сумма: 550 | Причина: 550 | Выдал: haldorrgen
+2025-03-20 21:17:15,433 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    return  # Игнорируем сообщения ботов
+        ^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:22:08,777 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:22:08,783 - INFO - logging in using static token
+2025-03-20 21:22:09,973 - INFO - Shard ID None has connected to Gateway (Session ID: 8fd270441bd31d0f62ec09a112c15c96).
+2025-03-20 21:22:12,021 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:23:07,539 - INFO - Штраф выдан: haldorrgen | Сумма: 5000 | Причина: 500 | Выдал: haldorrgen
+2025-03-20 21:23:07,572 - WARNING - We are being rate limited. POST https://discord.com/api/v10/channels/1276465290494087199/messages responded with 429. Retrying in 0.41 seconds.
+2025-03-20 21:23:09,238 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 682, in delete_command_messages
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:23:09,272 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 680, in delete_command_messages
+    try:
+    
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:23:12,151 - INFO - Штраф выдан: haldorrgen | Сумма: 5000 | Причина: 500 | Выдал: haldorrgen
+2025-03-20 21:23:13,157 - INFO - Штраф выдан: haldorrgen | Сумма: 5000 | Причина: 500 | Выдал: haldorrgen
+2025-03-20 21:26:15,635 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:26:15,641 - INFO - logging in using static token
+2025-03-20 21:26:16,835 - INFO - Shard ID None has connected to Gateway (Session ID: af15ab5c605c8ce26bf353a337a544ca).
+2025-03-20 21:26:18,886 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:29:21,623 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:29:21,627 - INFO - logging in using static token
+2025-03-20 21:29:22,673 - INFO - Shard ID None has connected to Gateway (Session ID: 8780ae37cf8866c0262c5dca3cb3e8e6).
+2025-03-20 21:29:24,719 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:29:50,701 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:29:50,755 - WARNING - We are being rate limited. POST https://discord.com/api/v10/channels/1276465290494087199/messages responded with 429. Retrying in 0.52 seconds.
+2025-03-20 21:29:52,800 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 674, in delete_command_messages
+    async def delete_command_messages(message):
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:29:55,431 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:29:56,362 - INFO - Штраф выдан: haldorrgen | Сумма: 500 | Причина: test | Выдал: haldorrgen
+2025-03-20 21:34:04,711 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:34:51,905 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:34:51,909 - INFO - logging in using static token
+2025-03-20 21:34:52,966 - INFO - Shard ID None has connected to Gateway (Session ID: 198677aba7fe3bfbb97813f08de97c75).
+2025-03-20 21:34:55,002 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:35:12,344 - INFO - Штраф выдан: haldorrgen | Сумма: 550 | Причина: 5050 | Выдал: haldorrgen
+2025-03-20 21:35:12,981 - INFO - Штраф выдан: haldorrgen | Сумма: 550 | Причина: 5050 | Выдал: haldorrgen
+2025-03-20 21:35:14,695 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 680, in delete_command_messages
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:35:14,757 - ERROR - Ignoring exception in on_message
+Traceback (most recent call last):
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\client.py", line 481, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\osnovnoe\hell\bot\test\v1\main-app\main.py", line 220, in on_message
+    await message.delete()  # Удаляем сообщение пользователя с командой
+    ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\message.py", line 1304, in delete
+    await self._state.http.delete_message(self.channel.id, self.id)
+  File "C:\Users\grigo\AppData\Roaming\Python\Python313\site-packages\discord\http.py", line 758, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
+2025-03-20 21:37:00,023 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-20 21:37:00,029 - INFO - logging in using static token
+2025-03-20 21:37:01,174 - INFO - Shard ID None has connected to Gateway (Session ID: 7a72b542bcea7b5af24f565eabd68b4a).
+2025-03-20 21:37:03,220 - INFO - Бот Секретарь#1905 запущен!
+2025-03-20 21:37:15,615 - INFO - Штраф выдан: haldorrgen | Сумма: 11231 | Причина: 123213 | Выдал: haldorrgen
+2025-03-20 21:37:15,644 - INFO - Штраф выдан: haldorrgen | Сумма: 11231 | Причина: 123213 | Выдал: haldorrgen
+2025-03-20 21:38:29,170 - INFO - Штраф выдан: haldorrgen | Сумма: 123213123 | Причина: 12312321 | Выдал: haldorrgen

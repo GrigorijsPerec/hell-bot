@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Панель управления ботом{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 60px;
+        }
+        .container {
+            max-width: 960px;
+        }
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Управление ботом</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('dashboard') }}">Панель</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('config_page') }}">Конфигурация</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('messages_page') }}">Сообщения</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logs') }}">Логи</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('bot_console') }}">Консоль</a> <!-- Новая кнопка -->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Консоль бота{% endblock %}
+{% block content %}
+<h2>Консоль бота</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label for="command" class="form-label">Введите команду</label>
+        <input type="text" class="form-control" id="command" name="command" placeholder="Например, !balance">
+    </div>
+    <button type="submit" class="btn btn-primary">Отправить</button>
+</form>
+
+<h3>Вывод консоли</h3>
+<pre style="background-color: #f8f9fa; padding: 15px;">{{ output }}</pre>
+{% endblock %}
