@@ -51,33 +51,90 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
-class FineModal(Modal, title="Выдать штраф"):
+import discord
+from discord.ext import commands
+from discord.ui import View, Button, Modal, TextInput
+
+# --- Модальные окна для управления балансом ---
+
+class DepositModal(Modal, title="Пополнить баланс"):
     member = TextInput(label="Участник (ID или упоминание)")
-    amount = TextInput(label="Сумма штрафа")
-    reason = TextInput(label="Причина", style=discord.TextStyle.paragraph)
+    amount = TextInput(label="Сумма пополнения")
 
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
-        member_text = self.member.value.strip()
-        member_obj = None
-        if member_text.isdigit():
-            member_obj = interaction.guild.get_member(int(member_text))
-        else:
-            try:
-                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
-                member_obj = interaction.guild.get_member(member_id)
-            except Exception:
-                pass
-        if not member_obj:
-            await interaction.response.send_message("Участник не найден.", ephemeral=True)
-            return
         try:
+            member_obj = interaction.guild.get_member(int(self.member.value))
             amount_value = int(self.amount.value)
-        except ValueError:
-            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
-            return
-        await bot.get_command("fine").callback(ctx, member_obj, amount_value, self.reason.value)
-        await interaction.response.send_message(f"Штраф выдан {member_obj.display_name}.", ephemeral=True)
+            await bot.get_command("balance deposit").callback(ctx, member_obj, amount_value)
+            await interaction.response.send_message(f"✅ Баланс {member_obj.display_name} пополнен на {amount_value} серебра.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+
+
+class WithdrawModal(Modal, title="Снять баланс"):
+    member = TextInput(label="Участник (ID или упоминание)")
+    amount = TextInput(label="Сумма снятия")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            member_obj = interaction.guild.get_member(int(self.member.value))
+            amount_value = int(self.amount.value)
+            await bot.get_command("balance withdraw").callback(ctx, member_obj, amount_value)
+            await interaction.response.send_message(f"💳 Снято {amount_value} серебра у {member_obj.display_name}.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+
+
+class TransferModal(Modal, title="Перевод средств"):
+    recipient = TextInput(label="Получатель (ID или упоминание)")
+    amount = TextInput(label="Сумма перевода")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            recipient_obj = interaction.guild.get_member(int(self.recipient.value))
+            amount_value = int(self.amount.value)
+            await bot.get_command("balance transfer").callback(ctx, recipient_obj, amount_value)
+            await interaction.response.send_message(f"🔄 {amount_value} серебра переведено {recipient_obj.display_name}.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+
+
+class HistoryModal(Modal, title="История транзакций"):
+    member = TextInput(label="Участник (ID или упоминание) (оставьте пустым для себя)", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            if self.member.value:
+                member_obj = interaction.guild.get_member(int(self.member.value))
+            else:
+                member_obj = ctx.author
+            await bot.get_command("balance history").callback(ctx, member_obj)
+            await interaction.response.send_message("📜 История транзакций отправлена.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка при получении истории.", ephemeral=True)
+
+
+# --- Модальные окна для штрафов ---
+
+class FineModal(Modal, title="Выдать штраф"):
+    member = TextInput(label="Участник (ID или упоминание)")
+    amount = TextInput(label="Сумма штрафа")
+    reason = TextInput(label="Причина")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            member_obj = interaction.guild.get_member(int(self.member.value))
+            amount_value = int(self.amount.value)
+            await bot.get_command("fine").callback(ctx, member_obj, amount_value, self.reason.value)
+            await interaction.response.send_message(f"🚫 Штраф {member_obj.display_name} на {amount_value} серебра.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+
 
 class CloseFineModal(Modal, title="Закрыть штраф"):
     fine_id = TextInput(label="ID штрафа")
@@ -86,20 +143,13 @@ class CloseFineModal(Modal, title="Закрыть штраф"):
         ctx = await bot.get_context(interaction.message)
         try:
             fine_id_int = int(self.fine_id.value)
-        except ValueError:
-            await interaction.response.send_message("Неверный ID штрафа.", ephemeral=True)
-            return
-        await bot.get_command("close_fine").callback(ctx, fine_id_int)
-        await interaction.response.send_message("Штраф закрыт.", ephemeral=True)
+            await bot.get_command("close_fine").callback(ctx, fine_id_int)
+            await interaction.response.send_message("✅ Штраф закрыт.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
 
-class UpdateMessageModal(Modal, title="Обновить сообщение"):
-    key = TextInput(label="Ключ сообщения")
-    new_message = TextInput(label="Новое сообщение", style=discord.TextStyle.paragraph)
 
-    async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("update_message").callback(ctx, self.key.value, new_message=self.new_message.value)
-        await interaction.response.send_message("Сообщение обновлено.", ephemeral=True)
+# --- Модальные окна для управления канал-ролью ---
 
 class AddChannelRoleModal(Modal, title="Добавить канал-роль"):
     channel_id = TextInput(label="ID канала")
@@ -108,13 +158,11 @@ class AddChannelRoleModal(Modal, title="Добавить канал-роль"):
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
         try:
-            channel_id = int(self.channel_id.value)
-            role_id = int(self.role_id.value)
-        except ValueError:
-            await interaction.response.send_message("ID канала и роли должны быть числами.", ephemeral=True)
-            return
-        await bot.get_command("add_channel_role").callback(ctx, channel_id, role_id)
-        await interaction.response.send_message("Канал-роль добавлены.", ephemeral=True)
+            await bot.get_command("add_channel_role").callback(ctx, int(self.role_id.value), int(self.channel_id.value))
+            await interaction.response.send_message("✅ Канал-роль добавлена.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+
 
 class RemoveChannelRoleModal(Modal, title="Удалить канал-роль"):
     channel_id = TextInput(label="ID канала")
@@ -122,224 +170,137 @@ class RemoveChannelRoleModal(Modal, title="Удалить канал-роль"):
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
         try:
-            channel_id = int(self.channel_id.value)
-        except ValueError:
-            await interaction.response.send_message("ID канала должен быть числом.", ephemeral=True)
-            return
-        await bot.get_command("remove_channel_role").callback(ctx, channel_id)
-        await interaction.response.send_message("Канал-роль удалены.", ephemeral=True)
+            await bot.get_command("remove_channel_role").callback(ctx, int(self.channel_id.value))
+            await interaction.response.send_message("✅ Канал-роль удалена.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
 
-class MModal(Modal, title="Сообщение пользователю"):
+
+class UpdateMessageModal(Modal, title="Обновить сообщение"):
+    key = TextInput(label="Ключ сообщения")
+    new_message = TextInput(label="Новое сообщение", style=discord.TextStyle.paragraph)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("update_message").callback(ctx, self.key.value, self.new_message.value)
+        await interaction.response.send_message("✅ Сообщение обновлено.", ephemeral=True)
+
+
+class SendMessageModal(Modal, title="Отправить ЛС"):
     member_id = TextInput(label="ID пользователя")
-    text = TextInput(label="Текст сообщения", style=discord.TextStyle.paragraph)
+    text = TextInput(label="Сообщение", style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
         try:
-            member_id = int(self.member_id.value)
-            member = interaction.guild.get_member(member_id)
-        except ValueError:
-            await interaction.response.send_message("ID пользователя должен быть числом.", ephemeral=True)
-            return
-        if not member:
-            await interaction.response.send_message("Пользователь не найден.", ephemeral=True)
-            return
-        await bot.get_command("m").callback(ctx, member, self.text.value)
-        await interaction.response.send_message("Сообщение отправлено.", ephemeral=True)
-
-# Добавляем новые модальные окна для управления балансом
-
-class DepositModal(Modal, title="Пополнить баланс"):
-    member = TextInput(label="Участник (ID или упоминание)")
-    amount = TextInput(label="Сумма пополнения")
-    note = TextInput(label="Комментарий (необязательно)", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-        member_text = self.member.value.strip()
-        member_obj = None
-        if member_text.isdigit():
-            member_obj = interaction.guild.get_member(int(member_text))
-        else:
-            try:
-                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
-                member_obj = interaction.guild.get_member(member_id)
-            except Exception:
-                pass
-        if not member_obj:
-            await interaction.response.send_message("Участник не найден.", ephemeral=True)
-            return
-        try:
-            amount_value = int(self.amount.value)
-        except ValueError:
-            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
-            return
-        await bot.get_command("balance deposit").callback(ctx, member_obj, amount_value)
-        await interaction.response.send_message(f"Баланс пополнен для {member_obj.display_name}.", ephemeral=True)
-
-
-class WithdrawModal(Modal, title="Снять баланс"):
-    member = TextInput(label="Участник (ID или упоминание)")
-    amount = TextInput(label="Сумма снятия")
-    note = TextInput(label="Комментарий (необязательно)", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-        member_text = self.member.value.strip()
-        member_obj = None
-        if member_text.isdigit():
-            member_obj = interaction.guild.get_member(int(member_text))
-        else:
-            try:
-                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
-                member_obj = interaction.guild.get_member(member_id)
-            except Exception:
-                pass
-        if not member_obj:
-            await interaction.response.send_message("Участник не найден.", ephemeral=True)
-            return
-        try:
-            amount_value = int(self.amount.value)
-        except ValueError:
-            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
-            return
-        await bot.get_command("balance withdraw").callback(ctx, member_obj, amount_value)
-        await interaction.response.send_message(f"Снятие средств выполнено для {member_obj.display_name}.", ephemeral=True)
-
-
-class TransferModal(Modal, title="Перевод средств"):
-    recipient = TextInput(label="Получатель (ID или упоминание)")
-    amount = TextInput(label="Сумма перевода")
-    note = TextInput(label="Комментарий (необязательно)", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-        recipient_text = self.recipient.value.strip()
-        recipient_obj = None
-        if recipient_text.isdigit():
-            recipient_obj = interaction.guild.get_member(int(recipient_text))
-        else:
-            try:
-                member_id = int(recipient_text.replace('<@', '').replace('!', '').replace('>', ''))
-                recipient_obj = interaction.guild.get_member(member_id)
-            except Exception:
-                pass
-        if not recipient_obj:
-            await interaction.response.send_message("Получатель не найден.", ephemeral=True)
-            return
-        try:
-            amount_value = int(self.amount.value)
-        except ValueError:
-            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
-            return
-        await bot.get_command("balance transfer").callback(ctx, recipient_obj, amount_value)
-        await interaction.response.send_message(f"Перевод средств выполнен для {recipient_obj.display_name}.", ephemeral=True)
-
-
-class HistoryModal(Modal, title="История транзакций"):
-    member = TextInput(label="Участник (ID или упоминание) (оставьте пустым для себя)", required=False)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-        if self.member.value.strip():
-            member_text = self.member.value.strip()
-            member_obj = None
-            if member_text.isdigit():
-                member_obj = interaction.guild.get_member(int(member_text))
+            member = interaction.guild.get_member(int(self.member_id.value))
+            if member:
+                await bot.get_command("m").callback(ctx, member, self.text.value)
+                await interaction.response.send_message("✅ Сообщение отправлено.", ephemeral=True)
             else:
-                try:
-                    member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
-                    member_obj = interaction.guild.get_member(member_id)
-                except Exception:
-                    pass
-            if not member_obj:
-                await interaction.response.send_message("Участник не найден.", ephemeral=True)
-                return
-        else:
-            member_obj = ctx.author
-        await bot.get_command("balance history").callback(ctx, member_obj)
-        await interaction.response.send_message("История транзакций отправлена.", ephemeral=True)
+                await interaction.response.send_message("❌ Пользователь не найден.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
 
 
-# Обновляем класс панели управления, добавляя новые кнопки для управления балансом
+# --- Панель управления (UI-кнопки) ---
 
 class CommandControlPanel(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="Баланс", style=discord.ButtonStyle.primary, emoji="💰")
+    # Команды для баланса
+    @discord.ui.button(label="💰 Баланс", style=discord.ButtonStyle.primary)
     async def balance_button(self, interaction: discord.Interaction, button: Button):
         ctx = await bot.get_context(interaction.message)
         await bot.get_command("balance").callback(ctx)
         await interaction.response.send_message("Баланс отправлен.", ephemeral=True)
 
-    @discord.ui.button(label="Пополнить баланс", style=discord.ButtonStyle.success, emoji="💸")
+    @discord.ui.button(label="💸 Пополнить баланс", style=discord.ButtonStyle.success)
     async def deposit_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(DepositModal())
 
-    @discord.ui.button(label="Снять баланс", style=discord.ButtonStyle.danger, emoji="💳")
+    @discord.ui.button(label="💳 Снять баланс", style=discord.ButtonStyle.danger)
     async def withdraw_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(WithdrawModal())
 
-    @discord.ui.button(label="Перевести", style=discord.ButtonStyle.primary, emoji="🔄")
+    @discord.ui.button(label="🔄 Перевести", style=discord.ButtonStyle.primary)
     async def transfer_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(TransferModal())
 
-    @discord.ui.button(label="История баланса", style=discord.ButtonStyle.secondary, emoji="🕒")
+    @discord.ui.button(label="🕒 История баланса", style=discord.ButtonStyle.secondary)
     async def history_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(HistoryModal())
 
-    @discord.ui.button(label="Штраф", style=discord.ButtonStyle.danger, emoji="⚖️")
+    # Команды для штрафов
+    @discord.ui.button(label="⚖️ Штраф", style=discord.ButtonStyle.danger)
     async def fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(FineModal())
 
-    @discord.ui.button(label="Закрыть штраф", style=discord.ButtonStyle.success, emoji="✅")
+    @discord.ui.button(label="✅ Закрыть штраф", style=discord.ButtonStyle.success)
     async def close_fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(CloseFineModal())
 
-    @discord.ui.button(label="Обновить сообщение", style=discord.ButtonStyle.secondary, emoji="📝")
-    async def update_message_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(UpdateMessageModal())
-
-    @discord.ui.button(label="Добавить канал-роль", style=discord.ButtonStyle.primary, emoji="➕")
+    # Команды для управления канал-ролью
+    @discord.ui.button(label="➕ Добавить канал-роль", style=discord.ButtonStyle.primary)
     async def add_channel_role_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(AddChannelRoleModal())
 
-    @discord.ui.button(label="Удалить канал-роль", style=discord.ButtonStyle.danger, emoji="➖")
+    @discord.ui.button(label="➖ Удалить канал-роль", style=discord.ButtonStyle.danger)
     async def remove_channel_role_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(RemoveChannelRoleModal())
 
-    @discord.ui.button(label="Пати", style=discord.ButtonStyle.success, emoji="🎉")
-    async def party_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("party").callback(ctx)
-        await interaction.response.send_message("Инфо по пати отправлена.", ephemeral=True)
-
-    @discord.ui.button(label="Отправить сообщение", style=discord.ButtonStyle.secondary, emoji="✉️")
-    async def m_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(MModal())
-
-    @discord.ui.button(label="Помощь", style=discord.ButtonStyle.secondary, emoji="❓")
-    async def help_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("help").callback(ctx)
-        await interaction.response.send_message("Помощь отправлена.", ephemeral=True)
-
-    @discord.ui.button(label="Список канал-роли", style=discord.ButtonStyle.secondary, emoji="📜")
+    @discord.ui.button(label="📜 Список канал-роли", style=discord.ButtonStyle.secondary)
     async def list_channel_roles_button(self, interaction: discord.Interaction, button: Button):
         ctx = await bot.get_context(interaction.message)
         await bot.get_command("list_channel_roles").callback(ctx)
-        await interaction.response.send_message("Список канал-роли отправлен.", ephemeral=True)
+        await interaction.response.send_message("✅ Список канал-роли отправлен.", ephemeral=True)
 
-    @discord.ui.button(label="Очистить этот канал", style=discord.ButtonStyle.danger, emoji="🗑️")
+    @discord.ui.button(label="📝 Обновить сообщение", style=discord.ButtonStyle.secondary)
+    async def update_message_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(UpdateMessageModal())
+
+    @discord.ui.button(label="✉️ Отправить ЛС", style=discord.ButtonStyle.secondary)
+    async def m_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(SendMessageModal())
+
+    # Команды для сборов и помощи
+    @discord.ui.button(label="🎉 Сборы", style=discord.ButtonStyle.success)
+    async def party_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("party").callback(ctx)
+        await interaction.response.send_message("✅ Информация о сборах отправлена.", ephemeral=True)
+
+    @discord.ui.button(label="❓ Помощь", style=discord.ButtonStyle.secondary)
+    async def help_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("help").callback(ctx)
+        await interaction.response.send_message("✅ Помощь отправлена.", ephemeral=True)
+
+    # Новая кнопка для очистки канала
+    @discord.ui.button(label="🗑️ Очистить канал", style=discord.ButtonStyle.danger)
     async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
         ctx = await bot.get_context(interaction.message)
-        channel = ctx.channel
-        pinned_messages = await channel.pins()
-        pinned_ids = [msg.id for msg in pinned_messages]
-        deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
-        await interaction.response.send_message(f"Удалено {len(deleted)} сообщений, кроме закрепленных.", ephemeral=True)
+        try:
+            channel = ctx.channel
+            pinned_messages = await channel.pins()
+            pinned_ids = [msg.id for msg in pinned_messages]
+            deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
+            await interaction.response.send_message(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("❌ Ошибка при очистке канала.", ephemeral=True)
 
+
+# --- Команда для вызова панели управления ---
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def панель(ctx):
+    embed = discord.Embed(
+        title="🎛️ Панель управления ботом",
+        description="Выбери нужную команду с помощью кнопок.",
+        color=discord.Color.blurple()
+    )
+    await ctx.send(embed=embed, view=CommandControlPanel())
 
 
 # Функция для загрузки сообщений из файла messages.json
