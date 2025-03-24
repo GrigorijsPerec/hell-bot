@@ -102,23 +102,36 @@ class TransferModal(Modal, title="Перевод средств"):
             await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
 
 
+import re
+
 class HistoryModal(Modal, title="История баланса"):
-    member = TextInput(label="ID или упоминание (необязательно)", required=False)
+    member = TextInput(label="ID или @упоминание (необязательно)", required=False)
 
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
-        try:
-            member_obj = None
-            if self.member.value:
-                member_obj = interaction.guild.get_member(int(self.member.value))
+
+        member_text = self.member.value.strip()
+        member_obj = None
+
+        if not member_text:  # Если поле пустое, берем пользователя, который нажал кнопку
+            member_obj = interaction.user
+        else:
+            # Проверяем, введён ли ID
+            if member_text.isdigit():
+                member_obj = interaction.guild.get_member(int(member_text))
+            # Проверяем, введено ли @упоминание
             else:
-                member_obj = interaction.user  # Если пусто, используем нажавшего кнопку
+                mention_match = re.match(r"<@!?(\d+)>", member_text)
+                if mention_match:
+                    member_id = int(mention_match.group(1))
+                    member_obj = interaction.guild.get_member(member_id)
 
-            await bot.get_command("balance history").callback(ctx, member_obj)
-            await interaction.response.send_message("📜 История транзакций отправлена.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Ошибка: {str(e)}", ephemeral=True)
+        if not member_obj:
+            await interaction.response.send_message("❌ Пользователь не найден.", ephemeral=True)
+            return
 
+        await bot.get_command("balance history").callback(ctx, member_obj)
+        await interaction.response.send_message("📜 История транзакций отправлена.", ephemeral=True)
 
 # --- Модальные окна для штрафов ---
 
