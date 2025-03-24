@@ -7,6 +7,7 @@ import sqlite3  # Импорт модуля для работы с SQLite баз
 from datetime import datetime, timedelta  # Импорт классов для работы с датой и временем
 from dotenv import load_dotenv  # Импорт функции для загрузки переменных окружения из файла .env
 import asyncio
+from discord.ui import View, Button, Modal, TextInput
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
@@ -49,6 +50,168 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
+
+class FineModal(Modal, title="Выдать штраф"):
+    member = TextInput(label="Участник (ID или упоминание)")
+    amount = TextInput(label="Сумма штрафа")
+    reason = TextInput(label="Причина", style=discord.TextStyle.paragraph)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        member_text = self.member.value.strip()
+        member_obj = None
+        if member_text.isdigit():
+            member_obj = interaction.guild.get_member(int(member_text))
+        else:
+            try:
+                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
+                member_obj = interaction.guild.get_member(member_id)
+            except Exception:
+                pass
+        if not member_obj:
+            await interaction.response.send_message("Участник не найден.", ephemeral=True)
+            return
+        try:
+            amount_value = int(self.amount.value)
+        except ValueError:
+            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
+            return
+        await bot.get_command("fine").callback(ctx, member_obj, amount_value, self.reason.value)
+        await interaction.response.send_message(f"Штраф выдан {member_obj.display_name}.", ephemeral=True)
+
+class CloseFineModal(Modal, title="Закрыть штраф"):
+    fine_id = TextInput(label="ID штрафа")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            fine_id_int = int(self.fine_id.value)
+        except ValueError:
+            await interaction.response.send_message("Неверный ID штрафа.", ephemeral=True)
+            return
+        await bot.get_command("close_fine").callback(ctx, fine_id_int)
+        await interaction.response.send_message("Штраф закрыт.", ephemeral=True)
+
+class UpdateMessageModal(Modal, title="Обновить сообщение"):
+    key = TextInput(label="Ключ сообщения")
+    new_message = TextInput(label="Новое сообщение", style=discord.TextStyle.paragraph)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("update_message").callback(ctx, self.key.value, new_message=self.new_message.value)
+        await interaction.response.send_message("Сообщение обновлено.", ephemeral=True)
+
+class AddChannelRoleModal(Modal, title="Добавить канал-роль"):
+    channel_id = TextInput(label="ID канала")
+    role_id = TextInput(label="ID роли")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            channel_id = int(self.channel_id.value)
+            role_id = int(self.role_id.value)
+        except ValueError:
+            await interaction.response.send_message("ID канала и роли должны быть числами.", ephemeral=True)
+            return
+        await bot.get_command("add_channel_role").callback(ctx, channel_id, role_id)
+        await interaction.response.send_message("Канал-роль добавлены.", ephemeral=True)
+
+class RemoveChannelRoleModal(Modal, title="Удалить канал-роль"):
+    channel_id = TextInput(label="ID канала")
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            channel_id = int(self.channel_id.value)
+        except ValueError:
+            await interaction.response.send_message("ID канала должен быть числом.", ephemeral=True)
+            return
+        await bot.get_command("remove_channel_role").callback(ctx, channel_id)
+        await interaction.response.send_message("Канал-роль удалены.", ephemeral=True)
+
+class MModal(Modal, title="Сообщение пользователю"):
+    member_id = TextInput(label="ID пользователя")
+    text = TextInput(label="Текст сообщения", style=discord.TextStyle.paragraph)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        try:
+            member_id = int(self.member_id.value)
+            member = interaction.guild.get_member(member_id)
+        except ValueError:
+            await interaction.response.send_message("ID пользователя должен быть числом.", ephemeral=True)
+            return
+        if not member:
+            await interaction.response.send_message("Пользователь не найден.", ephemeral=True)
+            return
+        await bot.get_command("m").callback(ctx, member, self.text.value)
+        await interaction.response.send_message("Сообщение отправлено.", ephemeral=True)
+
+# --- Панель управления ---
+
+class CommandControlPanel(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="Баланс", style=discord.ButtonStyle.primary, emoji="💰")
+    async def balance_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("balance").callback(ctx)
+        await interaction.response.send_message("Баланс отправлен.", ephemeral=True)
+
+    @discord.ui.button(label="Штраф", style=discord.ButtonStyle.danger, emoji="⚖️")
+    async def fine_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(FineModal())
+
+    @discord.ui.button(label="Закрыть штраф", style=discord.ButtonStyle.success, emoji="✅")
+    async def close_fine_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(CloseFineModal())
+
+    @discord.ui.button(label="Обновить сообщение", style=discord.ButtonStyle.secondary, emoji="📝")
+    async def update_message_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(UpdateMessageModal())
+
+    @discord.ui.button(label="Добавить канал-роль", style=discord.ButtonStyle.primary, emoji="➕")
+    async def add_channel_role_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(AddChannelRoleModal())
+
+    @discord.ui.button(label="Удалить канал-роль", style=discord.ButtonStyle.danger, emoji="➖")
+    async def remove_channel_role_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(RemoveChannelRoleModal())
+
+    @discord.ui.button(label="Пати", style=discord.ButtonStyle.success, emoji="🎉")
+    async def party_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("party").callback(ctx)
+        await interaction.response.send_message("Инфо по пати отправлена.", ephemeral=True)
+
+    @discord.ui.button(label="Отправить сообщение", style=discord.ButtonStyle.secondary, emoji="✉️")
+    async def m_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(MModal())
+
+    @discord.ui.button(label="Помощь", style=discord.ButtonStyle.secondary, emoji="❓")
+    async def help_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("help").callback(ctx)
+        await interaction.response.send_message("Помощь отправлена.", ephemeral=True)
+
+    @discord.ui.button(label="Список канал-роли", style=discord.ButtonStyle.secondary, emoji="📜")
+    async def list_channel_roles_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        await bot.get_command("list_channel_roles").callback(ctx)
+        await interaction.response.send_message("Список канал-роли отправлен.", ephemeral=True)
+
+# Команда запуска панели
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def панель(ctx):
+    embed = discord.Embed(
+        title="🎛️ Панель управления ботом",
+        description="Выбери нужную команду с помощью кнопок.",
+        color=discord.Color.blurple()
+    )
+    await ctx.send(embed=embed, view=CommandControlPanel())
+
 
 # Функция для загрузки сообщений из файла messages.json
 def load_messages():
