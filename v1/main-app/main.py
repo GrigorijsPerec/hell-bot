@@ -33,6 +33,8 @@ ROLE_ID = config["ROLE_ID"]
 CONTENT_MAKER_ROLE_ID = config["CONTENT_MAKER_ROLE_ID"]
 FINANCIER_ROLE_ID = config["FINANCIER_ROLE_ID"]
 FINE_ROLE_ID = config["FINE_ROLE_ID"]
+DM_LOG_CHANNEL_ID = config["DM_LOG_CHANNEL_ID"]
+
 # Для пересылки сообщений по мапе будем использовать данные из config["role_channel_map"]
 # Убираем жестко заданный channel_role_map
 
@@ -660,6 +662,35 @@ async def send_message(ctx, members: commands.Greedy[discord.Member], roles: com
     except discord.Forbidden:
         pass
 
+async def on_message(message):
+    # Игнорируем сообщения от самого бота и других ботов
+    if message.author.bot:
+        return
+
+    # Проверяем, это ли личные сообщения (Direct Message)
+    if isinstance(message.channel, discord.DMChannel):
+        # Получаем канал логов на сервере
+        guild = bot.guilds[0]  # Если несколько гильдий, выбери нужную
+        log_channel = guild.get_channel(DM_LOG_CHANNEL_ID)
+
+        if log_channel:
+            embed = discord.Embed(
+                title="📩 Новое ЛС боту",
+                description=message.content or "*Нет текста*",
+                color=discord.Color.purple(),
+                timestamp=message.created_at
+            )
+            embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url if message.author.avatar else None)
+
+            # Если есть вложения (фотки, файлы), приложим ссылки
+            if message.attachments:
+                attachments_list = "\n".join([att.url for att in message.attachments])
+                embed.add_field(name="Вложения", value=attachments_list, inline=False)
+
+            await log_channel.send(embed=embed)
+
+    # Не забывай вызывать обработку команд
+    await bot.process_commands(message)
 
 
 @bot.listen("on_message")
