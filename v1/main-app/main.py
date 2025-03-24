@@ -212,9 +212,9 @@ class CommandControlPanel(View):
     # Команды для баланса
     @discord.ui.button(label="💰 Баланс", style=discord.ButtonStyle.primary)
     async def balance_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("balance").callback(ctx)
-        await interaction.response.send_message("Баланс отправлен.", ephemeral=True)
+        user = interaction.user  # Получаем пользователя, который нажал на кнопку
+        current_balance = balance_manager.get_balance(user.id)  # Получаем баланс этого пользователя
+        await interaction.response.send_message(f"💰 {user.mention}, ваш баланс: {current_balance} серебра.", ephemeral=True)
 
     @discord.ui.button(label="💸 Пополнить баланс", style=discord.ButtonStyle.success)
     async def deposit_button(self, interaction: discord.Interaction, button: Button):
