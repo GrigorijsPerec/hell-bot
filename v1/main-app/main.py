@@ -209,24 +209,42 @@ async def list_channel_roles(ctx):
 # Функционал пересылки сообщений из назначенных каналов в ЛС
 # ==============================
 @bot.event
+@bot.event
 async def on_message(message):
-    # Игнорируем сообщения от бота и других ботов
+    # Игнорируем сообщения от ботов
     if message.author.bot:
         return
 
+    # ✅ 1. ЛС сообщения — отправляем в канал логов
+    if isinstance(message.channel, discord.DMChannel):
+        guild = bot.guilds[0]  # или выбери правильную гильдию
+        log_channel = guild.get_channel(DM_LOG_CHANNEL_ID)
+
+        if log_channel:
+            embed = discord.Embed(
+                title="📩 Новое ЛС боту",
+                description=message.content or "*Нет текста*",
+                color=discord.Color.purple(),
+                timestamp=message.created_at
+            )
+            embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url if message.author.avatar else None)
+
+            if message.attachments:
+                attachments_list = "\n".join([att.url for att in message.attachments])
+                embed.add_field(name="Вложения", value=attachments_list, inline=False)
+
+            await log_channel.send(embed=embed)
+
+    # ✅ 2. Обычная логика пересылки сообщений с каналов в ЛС, которую ты уже сделал (из role_channel_map)
     cfg = load_config_file()
     role_channel_map = cfg.get("role_channel_map", {})
-
-    # Для предотвращения дублирования, будем хранить ID участников, которым уже отправили сообщение
     sent_members = set()
 
-    # Перебираем каждую роль и проверяем, назначен ли канал к этой роли
     for role_id_str, channel_ids in role_channel_map.items():
         if str(message.channel.id) in channel_ids:
             role_obj = message.guild.get_role(int(role_id_str))
             if not role_obj:
-                continue  # если роль удалена, пропускаем
-            # Получаем всех участников с этой ролью
+                continue
             for member in message.guild.members:
                 if member.bot:
                     continue
@@ -240,12 +258,13 @@ async def on_message(message):
                         embed.set_footer(text=f"Автор: {message.author.display_name}")
                         await member.send(embed=embed)
                         sent_members.add(member.id)
-                        await asyncio.sleep(1)  # ограничиваем частоту отправки
+                        await asyncio.sleep(1)
                     except discord.Forbidden:
                         logging.warning(f"Не удалось отправить DM пользователю {member.name}")
                     except Exception as e:
                         logging.error(f"Ошибка отправки DM пользователю {member.name}: {e}")
 
+    # ✅ Запускаем обработку команд
     await bot.process_commands(message)
 
 # ==============================
@@ -662,35 +681,7 @@ async def send_message(ctx, members: commands.Greedy[discord.Member], roles: com
     except discord.Forbidden:
         pass
 
-async def on_message(message):
-    # Игнорируем сообщения от самого бота и других ботов
-    if message.author.bot:
-        return
 
-    # Проверяем, это ли личные сообщения (Direct Message)
-    if isinstance(message.channel, discord.DMChannel):
-        # Получаем канал логов на сервере
-        guild = bot.guilds[0]  # Если несколько гильдий, выбери нужную
-        log_channel = guild.get_channel(DM_LOG_CHANNEL_ID)
-
-        if log_channel:
-            embed = discord.Embed(
-                title="📩 Новое ЛС боту",
-                description=message.content or "*Нет текста*",
-                color=discord.Color.purple(),
-                timestamp=message.created_at
-            )
-            embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url if message.author.avatar else None)
-
-            # Если есть вложения (фотки, файлы), приложим ссылки
-            if message.attachments:
-                attachments_list = "\n".join([att.url for att in message.attachments])
-                embed.add_field(name="Вложения", value=attachments_list, inline=False)
-
-            await log_channel.send(embed=embed)
-
-    # Не забывай вызывать обработку команд
-    await bot.process_commands(message)
 
 
 @bot.listen("on_message")
