@@ -202,21 +202,36 @@ class UpdateMessageModal(Modal, title="Обновить сообщение"):
 
 
 class SendMessageModal(Modal, title="Отправить ЛС"):
-    member_id = TextInput(label="ID пользователя")
+    member_id = TextInput(label="ID или @упоминание")
     text = TextInput(label="Сообщение", style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
-        try:
-            member = interaction.guild.get_member(int(self.member_id.value))
-            if member:
-                await bot.get_command("m").callback(ctx, member, self.text.value)
-                await interaction.response.send_message("✅ Сообщение отправлено.", ephemeral=True)
-            else:
-                await interaction.response.send_message("❌ Пользователь не найден.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+        member_text = self.member_id.value.strip()
+        member_obj = None
 
+        # Проверяем, введён ли ID
+        if member_text.isdigit():
+            member_obj = interaction.guild.get_member(int(member_text))
+        # Проверяем, введено ли @упоминание
+        else:
+            mention_match = re.match(r"<@!?(\d+)>", member_text)
+            if mention_match:
+                member_id = int(mention_match.group(1))
+                member_obj = interaction.guild.get_member(member_id)
+
+        if not member_obj:
+            await interaction.response.send_message("❌ Ошибка: Пользователь не найден.", ephemeral=True)
+            return
+
+        # Пробуем отправить сообщение в ЛС
+        try:
+            await member_obj.send(f"📩 **Сообщение от {interaction.user.display_name}:**\n{self.text.value}")
+            await interaction.response.send_message("✅ Сообщение успешно отправлено.", ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message(f"⚠️ {member_obj.mention} закрыл ЛС, отправка невозможна.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Ошибка при отправке: {str(e)}", ephemeral=True)
 
 # --- Панель управления (UI-кнопки) ---
 
@@ -295,16 +310,20 @@ class CommandControlPanel(View):
     # Новая кнопка для очистки канала
     @discord.ui.button(label="🗑️ Очистить канал", style=discord.ButtonStyle.danger)
     async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.defer(ephemeral=True)  # Мгновенный ответ, предотвращает таймаут
+        
         ctx = await bot.get_context(interaction.message)
+        channel = ctx.channel
+
         try:
-            channel = ctx.channel
             pinned_messages = await channel.pins()
             pinned_ids = [msg.id for msg in pinned_messages]
-            deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
-            await interaction.response.send_message(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message("❌ Ошибка при очистке канала.", ephemeral=True)
 
+            deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
+            await interaction.followup.send(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
+
+        except Exception as e:
+            await interaction.followup.send(f"❌ Ошибка при очистке канала: {str(e)}", ephemeral=True)
 
 # --- Команда для вызова панели управления ---
 @bot.command()
