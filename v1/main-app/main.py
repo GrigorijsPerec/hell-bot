@@ -201,6 +201,15 @@ class CommandControlPanel(View):
         await bot.get_command("list_channel_roles").callback(ctx)
         await interaction.response.send_message("Список канал-роли отправлен.", ephemeral=True)
 
+    @discord.ui.button(label="Очистить этот канал", style=discord.ButtonStyle.danger, emoji="🗑️")
+    async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
+        ctx = await bot.get_context(interaction.message)
+        channel = ctx.channel
+        pinned_messages = await channel.pins()
+        pinned_ids = [msg.id for msg in pinned_messages]
+        deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
+        await interaction.response.send_message(f"Удалено {len(deleted)} сообщений, кроме закрепленных.", ephemeral=True)
+
 # Команда запуска панели
 @bot.command()
 @commands.has_permissions(administrator=True)
