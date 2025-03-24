@@ -102,20 +102,22 @@ class TransferModal(Modal, title="Перевод средств"):
             await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
 
 
-class HistoryModal(Modal, title="История транзакций"):
-    member = TextInput(label="Участник (ID или упоминание) (оставьте пустым для себя)", required=False)
+class HistoryModal(Modal, title="История баланса"):
+    member = TextInput(label="ID или упоминание (необязательно)", required=False)
 
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
         try:
+            member_obj = None
             if self.member.value:
                 member_obj = interaction.guild.get_member(int(self.member.value))
             else:
-                member_obj = ctx.author
+                member_obj = interaction.user  # Если пусто, используем нажавшего кнопку
+
             await bot.get_command("balance history").callback(ctx, member_obj)
             await interaction.response.send_message("📜 История транзакций отправлена.", ephemeral=True)
         except Exception as e:
-            await interaction.response.send_message("❌ Ошибка при получении истории.", ephemeral=True)
+            await interaction.response.send_message(f"❌ Ошибка: {str(e)}", ephemeral=True)
 
 
 # --- Модальные окна для штрафов ---
