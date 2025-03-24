@@ -147,7 +147,121 @@ class MModal(Modal, title="Сообщение пользователю"):
         await bot.get_command("m").callback(ctx, member, self.text.value)
         await interaction.response.send_message("Сообщение отправлено.", ephemeral=True)
 
-# --- Панель управления ---
+# Добавляем новые модальные окна для управления балансом
+
+class DepositModal(Modal, title="Пополнить баланс"):
+    member = TextInput(label="Участник (ID или упоминание)")
+    amount = TextInput(label="Сумма пополнения")
+    note = TextInput(label="Комментарий (необязательно)", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        member_text = self.member.value.strip()
+        member_obj = None
+        if member_text.isdigit():
+            member_obj = interaction.guild.get_member(int(member_text))
+        else:
+            try:
+                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
+                member_obj = interaction.guild.get_member(member_id)
+            except Exception:
+                pass
+        if not member_obj:
+            await interaction.response.send_message("Участник не найден.", ephemeral=True)
+            return
+        try:
+            amount_value = int(self.amount.value)
+        except ValueError:
+            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
+            return
+        await bot.get_command("balance deposit").callback(ctx, member_obj, amount_value)
+        await interaction.response.send_message(f"Баланс пополнен для {member_obj.display_name}.", ephemeral=True)
+
+
+class WithdrawModal(Modal, title="Снять баланс"):
+    member = TextInput(label="Участник (ID или упоминание)")
+    amount = TextInput(label="Сумма снятия")
+    note = TextInput(label="Комментарий (необязательно)", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        member_text = self.member.value.strip()
+        member_obj = None
+        if member_text.isdigit():
+            member_obj = interaction.guild.get_member(int(member_text))
+        else:
+            try:
+                member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
+                member_obj = interaction.guild.get_member(member_id)
+            except Exception:
+                pass
+        if not member_obj:
+            await interaction.response.send_message("Участник не найден.", ephemeral=True)
+            return
+        try:
+            amount_value = int(self.amount.value)
+        except ValueError:
+            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
+            return
+        await bot.get_command("balance withdraw").callback(ctx, member_obj, amount_value)
+        await interaction.response.send_message(f"Снятие средств выполнено для {member_obj.display_name}.", ephemeral=True)
+
+
+class TransferModal(Modal, title="Перевод средств"):
+    recipient = TextInput(label="Получатель (ID или упоминание)")
+    amount = TextInput(label="Сумма перевода")
+    note = TextInput(label="Комментарий (необязательно)", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        recipient_text = self.recipient.value.strip()
+        recipient_obj = None
+        if recipient_text.isdigit():
+            recipient_obj = interaction.guild.get_member(int(recipient_text))
+        else:
+            try:
+                member_id = int(recipient_text.replace('<@', '').replace('!', '').replace('>', ''))
+                recipient_obj = interaction.guild.get_member(member_id)
+            except Exception:
+                pass
+        if not recipient_obj:
+            await interaction.response.send_message("Получатель не найден.", ephemeral=True)
+            return
+        try:
+            amount_value = int(self.amount.value)
+        except ValueError:
+            await interaction.response.send_message("Неверная сумма.", ephemeral=True)
+            return
+        await bot.get_command("balance transfer").callback(ctx, recipient_obj, amount_value)
+        await interaction.response.send_message(f"Перевод средств выполнен для {recipient_obj.display_name}.", ephemeral=True)
+
+
+class HistoryModal(Modal, title="История транзакций"):
+    member = TextInput(label="Участник (ID или упоминание) (оставьте пустым для себя)", required=False)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        ctx = await bot.get_context(interaction.message)
+        if self.member.value.strip():
+            member_text = self.member.value.strip()
+            member_obj = None
+            if member_text.isdigit():
+                member_obj = interaction.guild.get_member(int(member_text))
+            else:
+                try:
+                    member_id = int(member_text.replace('<@', '').replace('!', '').replace('>', ''))
+                    member_obj = interaction.guild.get_member(member_id)
+                except Exception:
+                    pass
+            if not member_obj:
+                await interaction.response.send_message("Участник не найден.", ephemeral=True)
+                return
+        else:
+            member_obj = ctx.author
+        await bot.get_command("balance history").callback(ctx, member_obj)
+        await interaction.response.send_message("История транзакций отправлена.", ephemeral=True)
+
+
+# Обновляем класс панели управления, добавляя новые кнопки для управления балансом
 
 class CommandControlPanel(View):
     def __init__(self):
@@ -158,6 +272,22 @@ class CommandControlPanel(View):
         ctx = await bot.get_context(interaction.message)
         await bot.get_command("balance").callback(ctx)
         await interaction.response.send_message("Баланс отправлен.", ephemeral=True)
+
+    @discord.ui.button(label="Пополнить баланс", style=discord.ButtonStyle.success, emoji="💸")
+    async def deposit_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(DepositModal())
+
+    @discord.ui.button(label="Снять баланс", style=discord.ButtonStyle.danger, emoji="💳")
+    async def withdraw_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(WithdrawModal())
+
+    @discord.ui.button(label="Перевести", style=discord.ButtonStyle.primary, emoji="🔄")
+    async def transfer_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(TransferModal())
+
+    @discord.ui.button(label="История баланса", style=discord.ButtonStyle.secondary, emoji="🕒")
+    async def history_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(HistoryModal())
 
     @discord.ui.button(label="Штраф", style=discord.ButtonStyle.danger, emoji="⚖️")
     async def fine_button(self, interaction: discord.Interaction, button: Button):
@@ -210,16 +340,6 @@ class CommandControlPanel(View):
         deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
         await interaction.response.send_message(f"Удалено {len(deleted)} сообщений, кроме закрепленных.", ephemeral=True)
 
-# Команда запуска панели
-@bot.command()
-@commands.has_permissions(administrator=True)
-async def панель(ctx):
-    embed = discord.Embed(
-        title="🎛️ Панель управления ботом",
-        description="Выбери нужную команду с помощью кнопок.",
-        color=discord.Color.blurple()
-    )
-    await ctx.send(embed=embed, view=CommandControlPanel())
 
 
 # Функция для загрузки сообщений из файла messages.json
