@@ -140,7 +140,6 @@ class FineModal(Modal, title="Выдать штраф"):
     reason = TextInput(label="Причина")
 
     async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
         try:
             # Проверяем, введён ли ID
             member_text = self.member.value.strip()
@@ -160,8 +159,60 @@ class FineModal(Modal, title="Выдать штраф"):
                 return
 
             amount_value = int(self.amount.value)
-            await bot.get_command("fine").callback(ctx, member_obj, amount_value, self.reason.value)
-            await interaction.response.send_message(f"🚫 Штраф {member_obj.display_name} на {amount_value} серебра.", ephemeral=True)
+            
+            # Проверяем роль финансиста
+            if not await has_role(interaction.user, FINANCIER_ROLE_ID):
+                await interaction.response.send_message("❌ У вас нет прав для выдачи штрафа.", ephemeral=True)
+                return
+
+            # Логируем штраф в базу
+            with sqlite3.connect(DB_NAME) as conn:
+                c = conn.cursor()
+                c.execute("INSERT INTO fines (user_id, amount, reason) VALUES (?, ?, ?)", 
+                         (str(member_obj.id), amount_value, self.reason.value))
+                fine_id = c.lastrowid
+                conn.commit()
+
+            # Синхронизируем баланс
+            sync_fines_with_balance(member_obj.id)
+
+            # Создаём embed-уведомление
+            embed = discord.Embed(
+                title="🚫 **Новый штраф!** 🚫",
+                color=discord.Color.red()
+            )
+            embed.add_field(name="**Нарушитель:**", value=member_obj.mention, inline=False)
+            embed.add_field(name="**Размер штрафа:**", value=f"{amount_value} серебра", inline=False)
+            embed.add_field(name="**Причина:**", value=self.reason.value, inline=False)
+            embed.add_field(name="**Выдал штраф:**", value=interaction.user.mention, inline=False)
+            embed.add_field(name="**Номер штрафа:**", value=fine_id, inline=False)
+
+            # Отправляем в канал штрафов
+            fine_channel = interaction.guild.get_channel(FINE_CHANNEL_ID)
+            if fine_channel:
+                await fine_channel.send(embed=embed)
+
+            # Добавляем роль штрафника
+            fine_role = discord.utils.get(interaction.guild.roles, id=FINE_ROLE_ID)
+            if fine_role and fine_role not in member_obj.roles:
+                await member_obj.add_roles(fine_role)
+
+            # Пробуем отправить в ЛС
+            try:
+                await member_obj.send(embed=embed)
+                status_msg = messages["fine_sent_to_dm"].format(user_mention=member_obj.mention)
+            except discord.Forbidden:
+                status_msg = messages["fine_failed_to_dm"].format(user_mention=member_obj.mention)
+
+            # Логируем
+            log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+            if log_channel:
+                await log_channel.send(f"✅ Штраф для {member_obj.mention} отправлен в {fine_channel.mention}!")
+                await log_channel.send(status_msg)
+
+            await interaction.response.send_message("✅ Штраф успешно выдан.", ephemeral=True)
+            logging.info(f"Штраф выдан: {member_obj} | Сумма: {amount_value} | Причина: {self.reason.value} | Выдал: {interaction.user}")
+
         except ValueError as e:
             await interaction.response.send_message(f"❌ Ошибка: неверное значение. {str(e)}", ephemeral=True)
         except Exception as e:
