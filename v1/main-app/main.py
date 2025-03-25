@@ -407,16 +407,37 @@ class BalanceView(View):
             msg += f"{i}. {name}: {bal} серебра\n"
         await interaction.response.send_message(msg, ephemeral=True)
 
+class TelegramView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
     @discord.ui.button(label="🔗 Привязать Telegram", style=discord.ButtonStyle.success)
     async def link_telegram_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_message(
             "🔗 **Как привязать Telegram к боту:**\n\n"
-            "1. Добавьте бота @HellBranchBot в Telegram\n"
+            "1. Добавьте бота @HellBranch_bot в Telegram\n"
             "2. Отправьте ему команду `/start`\n"
             "3. Следуйте инструкциям бота\n\n"
             "После привязки вы будете получать уведомления в обоих мессенджерах!",
             ephemeral=True
         )
+
+@bot.command(name="telegram_panel")
+async def create_telegram_panel(ctx):
+    """Создает панель управления Telegram с кнопками"""
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.send("❌ У вас нет прав для создания панели управления.")
+        return
+
+    embed = discord.Embed(
+        title="🔗 Панель управления Telegram",
+        description="Нажмите на кнопку ниже, чтобы получить инструкции по привязке Telegram аккаунта.\n\n"
+                   "После привязки вы будете получать уведомления в обоих мессенджерах!",
+        color=discord.Color.blue()
+    )
+    
+    await ctx.send(embed=embed, view=TelegramView())
+    await ctx.message.delete()
 
 @bot.command(name="balance_panel")
 async def create_balance_panel(ctx):
@@ -429,8 +450,7 @@ async def create_balance_panel(ctx):
         title="💰 Панель управления балансом",
         description="Нажмите на кнопки ниже, чтобы:\n\n"
                    "💰 **Мой баланс** - посмотреть свой текущий баланс\n"
-                   "🏆 **Топ баланса** - посмотреть топ участников по балансу\n"
-                   "🔗 **Привязать Telegram** - получать уведомления в Telegram",
+                   "🏆 **Топ баланса** - посмотреть топ участников по балансу",
         color=discord.Color.gold()
     )
     
