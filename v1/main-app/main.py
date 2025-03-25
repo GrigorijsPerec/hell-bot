@@ -65,12 +65,16 @@ DB_NAME = "../bot.db"  # Имя файла базы данных
 @dp.message(commands=['start'])
 async def handle_start(message: types.Message):
     """Обработчик команды /start"""
-    await message.reply(
-        "👋 Привет! Я бот Hell Branch.\n\n"
-        "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
-        "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord.\n\n"
-        "Например: `/link abc123`"
-    )
+    try:
+        await message.answer(
+            "👋 Привет! Я бот Hell Branch.\n\n"
+            "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
+            "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord.\n\n"
+            "Например: `/link abc123`"
+        )
+        logging.info(f"Telegram: Обработана команда /start от пользователя {message.from_user.id}")
+    except Exception as e:
+        logging.error(f"Ошибка в handle_start: {e}")
 
 @dp.message(commands=['link'])
 async def handle_link(message: types.Message):
@@ -79,7 +83,7 @@ async def handle_link(message: types.Message):
         # Получаем код из сообщения
         parts = message.text.split()
         if len(parts) != 2:
-            await message.reply(
+            await message.answer(
                 "❌ Неверный формат команды.\n"
                 "Используйте: `/link КОД`\n"
                 "Например: `/link abc123`"
@@ -90,29 +94,33 @@ async def handle_link(message: types.Message):
         
         # Проверяем код и создаём связь
         if await verify_link_code(code, message.from_user.id, message.from_user.username):
-            await message.reply(
+            await message.answer(
                 "✅ Аккаунты успешно связаны!\n"
                 "Теперь вы будете получать уведомления в Telegram."
             )
+            logging.info(f"Telegram: Успешная привязка аккаунта для пользователя {message.from_user.id}")
         else:
-            await message.reply(
+            await message.answer(
                 "❌ Неверный или устаревший код.\n"
                 "Запросите новый код в Discord с помощью команды `!link_telegram`"
             )
             
     except Exception as e:
         logging.error(f"Ошибка в handle_link: {e}")
-        await message.reply("❌ Произошла ошибка при обработке команды.")
+        await message.answer("❌ Произошла ошибка при обработке команды.")
 
 @dp.message(commands=['help'])
 async def handle_help(message: types.Message):
     """Обработчик команды /help"""
-    await message.reply(
-        "🔍 Доступные команды:\n\n"
-        "/start - Начать работу с ботом\n"
-        "/link КОД - Привязать Discord аккаунт\n"
-        "/help - Показать это сообщение"
-    )
+    try:
+        await message.answer(
+            "🔍 Доступные команды:\n\n"
+            "/start - Начать работу с ботом\n"
+            "/link КОД - Привязать Discord аккаунт\n"
+            "/help - Показать это сообщение"
+        )
+    except Exception as e:
+        logging.error(f"Ошибка в handle_help: {e}")
 
 # Запускаем Telegram бота
 async def start_telegram_bot():
