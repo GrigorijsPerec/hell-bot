@@ -13,6 +13,7 @@ import aiohttp
 from aiogram import Bot as TelegramBot, Dispatcher, types
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
+from aiogram.filters import Command
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
@@ -66,7 +67,7 @@ bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
 # Регистрируем хендлеры Telegram
-@dp.message(commands=['start'])
+@dp.message(Command('start'))
 async def handle_start(message: types.Message):
     """Обработчик команды /start"""
     try:
@@ -80,7 +81,7 @@ async def handle_start(message: types.Message):
     except Exception as e:
         logging.error(f"Ошибка в handle_start: {e}")
 
-@dp.message(commands=['link'])
+@dp.message(Command('link'))
 async def handle_link(message: types.Message):
     """Обработчик команды /link для привязки аккаунтов"""
     try:
@@ -113,7 +114,7 @@ async def handle_link(message: types.Message):
         logging.error(f"Ошибка в handle_link: {e}")
         await message.answer("❌ Произошла ошибка при обработке команды.")
 
-@dp.message(commands=['help'])
+@dp.message(Command('help'))
 async def handle_help(message: types.Message):
     """Обработчик команды /help"""
     try:
