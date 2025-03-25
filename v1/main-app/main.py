@@ -1053,3 +1053,41 @@ async def help_command(ctx):
 
 # Запуск бота с использованием токена из переменных окружения
 bot.run(TOKEN)
+
+class BalanceView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="💰 Мой баланс", style=discord.ButtonStyle.primary)
+    async def my_balance_button(self, interaction: discord.Interaction, button: Button):
+        user = interaction.user
+        current_balance = balance_manager.get_balance(user.id)
+        response = f"💰 {user.mention}, ваш баланс: {current_balance} серебра."
+        await interaction.response.send_message(response, ephemeral=True)
+
+    @discord.ui.button(label="🏆 Топ баланса", style=discord.ButtonStyle.secondary)
+    async def balance_top_button(self, interaction: discord.Interaction, button: Button):
+        top_list = balance_manager.top_balances()
+        msg = "🏆 Топ участников по балансу:\n\n"
+        for i, (member_id, bal, nickname) in enumerate(top_list[:10], 1):
+            name = nickname if nickname else str(member_id)
+            msg += f"{i}. {name}: {bal} серебра\n"
+        await interaction.response.send_message(msg, ephemeral=True)
+
+@bot.command(name="balance_panel")
+async def create_balance_panel(ctx):
+    """Создает панель управления балансом с кнопками"""
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.send("❌ У вас нет прав для создания панели управления.")
+        return
+
+    embed = discord.Embed(
+        title="💰 Панель управления балансом",
+        description="Нажмите на кнопки ниже, чтобы:\n\n"
+                   "💰 **Мой баланс** - посмотреть свой текущий баланс\n"
+                   "🏆 **Топ баланса** - посмотреть топ-10 участников по балансу",
+        color=discord.Color.gold()
+    )
+    
+    await ctx.send(embed=embed, view=BalanceView())
+    await ctx.message.delete()
