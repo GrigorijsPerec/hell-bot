@@ -11,7 +11,7 @@ from discord.ui import View, Button, Modal, TextInput
 import secrets
 import aiohttp
 from aiogram import Bot as TelegramBot, Dispatcher, types
-from aiogram.utils import executor
+from aiogram.enums import ParseMode
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
@@ -46,8 +46,8 @@ DM_LOG_CHANNEL_ID = config["DM_LOG_CHANNEL_ID"]
 LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда отправляются все логи
 
 # Инициализация Telegram бота
-telegram_bot = TelegramBot(token=TELEGRAM_TOKEN)
-dp = Dispatcher(telegram_bot)
+telegram_bot = TelegramBot(token=TELEGRAM_TOKEN, parse_mode=ParseMode.MARKDOWN)
+dp = Dispatcher()
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
 intents = discord.Intents.default()
@@ -1392,7 +1392,7 @@ async def send_notification(discord_id: str, text: str | None = None, embed: dis
         logging.error(f"Ошибка в send_notification: {e}")
 
 # Обработчики команд Telegram
-@dp.message_handler(commands=['start'])
+@dp.message(commands=['start'])
 async def handle_start(message: types.Message):
     """Обработчик команды /start"""
     await message.reply(
@@ -1402,7 +1402,7 @@ async def handle_start(message: types.Message):
         "Например: `/link abc123`"
     )
 
-@dp.message_handler(commands=['link'])
+@dp.message(commands=['link'])
 async def handle_link(message: types.Message):
     """Обработчик команды /link для привязки аккаунтов"""
     try:
@@ -1434,7 +1434,7 @@ async def handle_link(message: types.Message):
         logging.error(f"Ошибка в handle_link: {e}")
         await message.reply("❌ Произошла ошибка при обработке команды.")
 
-@dp.message_handler(commands=['help'])
+@dp.message(commands=['help'])
 async def handle_help(message: types.Message):
     """Обработчик команды /help"""
     await message.reply(
@@ -1448,26 +1448,33 @@ async def handle_help(message: types.Message):
 async def start_telegram_bot():
     """Запускает Telegram бота"""
     try:
+        # Регистрируем обработчики
+        dp.include_routers(handle_start, handle_link, handle_help)
         # Удаляем старые вебхуки
         await telegram_bot.delete_webhook(drop_pending_updates=True)
-        # Запускаем поллинг в отдельном потоке
-        executor.start_polling(dp, skip_updates=True)
+        # Запускаем поллинг
+        await dp.start_polling(telegram_bot)
     except Exception as e:
         logging.error(f"Ошибка запуска Telegram бота: {e}")
 
 # Добавляем запуск Telegram бота в основной цикл
-def main():
+async def main():
     """Основная функция запуска ботов"""
     try:
-        # Запускаем Discord бота
-        bot.run(DISCORD_TOKEN)
+        # Запускаем оба бота
+        await asyncio.gather(
+            bot.start(DISCORD_TOKEN),
+            start_telegram_bot()
+        )
     except Exception as e:
         logging.error(f"Ошибка в main: {e}")
     finally:
         # Закрываем сессии
-        if telegram_bot.session:
-            asyncio.run(telegram_bot.session.close())
+        await asyncio.gather(
+            bot.close(),
+            telegram_bot.session.close()
+        )
 
 # Запускаем ботов
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
