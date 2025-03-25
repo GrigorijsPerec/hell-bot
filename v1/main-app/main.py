@@ -1156,10 +1156,10 @@ async def get_user_id(ctx, username: str):
 @bot.command(name="update_balances")
 @commands.has_permissions(administrator=True)
 async def update_balances(ctx, *, data: str):
-    """Временная команда для массового обновления балансов"""
+    """Обновляет балансы пользователей из списка"""
     try:
-        # Разбиваем данные по строкам
-        lines = data.strip().split('\n')
+        # Разбиваем данные по строкам или точкам с запятой
+        lines = [line.strip() for line in data.replace(';', '\n').split('\n')]
         updated = 0
         errors = []
 
@@ -1168,27 +1168,36 @@ async def update_balances(ctx, *, data: str):
                 # Пропускаем пустые строки
                 if not line.strip():
                     continue
-                    
+                
                 # Парсим строку
-                parts = line.split(':')
-                if len(parts) != 2:
-                    errors.append(f"Неверный формат строки: {line}")
+                if ':' not in line:
+                    errors.append(f"Неверный формат строки (нет ':'): {line}")
                     continue
 
-                # Получаем имя пользователя и сумму
-                username = parts[0].split('|')[0].strip().strip('@')
-                amount = int(parts[1].strip().replace(' ', ''))
-
+                # Разделяем на имя и сумму
+                name_part, amount_str = line.split(':', 1)
+                
+                # Очищаем сумму от пробелов и получаем число
+                amount = int(amount_str.strip().replace(' ', ''))
+                
+                # Получаем имя пользователя
+                username = name_part.split('|')[0].strip().strip('@')
+                
                 # Ищем пользователя
                 member = None
                 for guild_member in ctx.guild.members:
                     if username.lower() in guild_member.name.lower() or (guild_member.nick and username.lower() in guild_member.nick.lower()):
                         member = guild_member
                         break
+                    # Проверяем ID пользователя
+                    if username.isdigit() and str(guild_member.id) == username:
+                        member = guild_member
+                        break
 
                 if member:
-                    # Обновляем баланс
-                    balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Mass balance update")
+                    # Устанавливаем новый баланс (сначала обнуляем, потом добавляем)
+                    balance_manager.withdraw(member.id, balance_manager.get_balance(member.id), nickname=member.display_name, by=ctx.author.id, note="Balance reset")
+                    balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Balance update")
                     updated += 1
                 else:
                     errors.append(f"Пользователь не найден: {username}")
