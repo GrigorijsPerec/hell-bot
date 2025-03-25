@@ -1238,14 +1238,7 @@ async def link_telegram_cmd(ctx):
                 "⚠️ Код действителен 5 минут"
             ),
             color=discord.Color.blue()
-        )
-        
-        try:
-            await ctx.author.send(embed=embed)
-            await ctx.send("✅ Инструкции отправлены вам в личные сообщения!", ephemeral=True)
-        except discord.Forbidden:
-            await ctx.send("❌ Не удалось отправить вам личное сообщение. Пожалуйста, откройте личные сообщения.", ephemeral=True)
-            
+        )            
     except Exception as e:
         logging.error(f"Ошибка в команде link_telegram: {e}")
         await ctx.send("❌ Произошла ошибка при генерации кода.", ephemeral=True)
