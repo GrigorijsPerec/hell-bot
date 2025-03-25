@@ -1,0 +1,212 @@
+[2025-03-25 11:49:11] [INFO    ] discord.client: logging in using static token
+[2025-03-25 11:49:12] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5ae577882ec3dfda36694704ad10fff0).
+[2025-03-25 11:50:39] [INFO    ] discord.client: logging in using static token
+[2025-03-25 11:50:39] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 324f16985c80d6a953f70699706dd334).
+[2025-03-25 12:01:00] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:01:01] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f37c021319cdc2e483835b1b1095e72d).
+[2025-03-25 12:06:39] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:06:40] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 7a02ba2d32679afed3276377fb526042).
+[2025-03-25 12:13:17] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "roles" is not found
+[2025-03-25 12:15:58] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:15:59] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ba4ca211c39dd4d71953156527ed81f8).
+[2025-03-25 12:17:05] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:17:06] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 00134a3989492e946a333dc97412e273).
+[2025-03-25 12:17:22] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:17:23] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2511d40fd4f0560b08e0bea1fb272bb3).
+[2025-03-25 12:20:15] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:20:16] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5c54d2a9d8ae6730e012235c02710e1d).
+[2025-03-25 12:21:37] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:21:38] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d14b48132959290865de70356cfeb205).
+[2025-03-25 12:21:56] [ERROR   ] discord.ui.view: Ignoring exception in view <CommandControlPanel timeout=None children=8> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='💰 Баланс' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/view.py", line 435, in _scheduled_task
+    await item.callback(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 252, in balance_button
+    await self.update_message(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 244, in update_message
+    await interaction.response.edit_message(view=CommandControlPanel())
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/interactions.py", line 1114, in edit_message
+    raise InteractionResponded(self._parent)
+discord.errors.InteractionResponded: This interaction has already been responded to before
+[2025-03-25 12:28:40] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:28:42] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ae20ecc8367468c24bdada8d7ad802c9).
+[2025-03-25 12:29:13] [ERROR   ] discord.ui.view: Ignoring exception in view <CommandControlPanel timeout=None children=8> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='💰 Баланс' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/view.py", line 435, in _scheduled_task
+    await item.callback(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 252, in balance_button
+    await self.update_message(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 244, in update_message
+    await interaction.response.edit_message(view=CommandControlPanel())
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/interactions.py", line 1114, in edit_message
+    raise InteractionResponded(self._parent)
+discord.errors.InteractionResponded: This interaction has already been responded to before
+[2025-03-25 12:32:18] [ERROR   ] discord.ui.view: Ignoring exception in view <CommandControlPanel timeout=None children=8> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='💰 Баланс' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/view.py", line 435, in _scheduled_task
+    await item.callback(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 252, in balance_button
+    await self.update_message(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 244, in update_message
+    await interaction.response.edit_message(view=CommandControlPanel())
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/interactions.py", line 1114, in edit_message
+    raise InteractionResponded(self._parent)
+discord.errors.InteractionResponded: This interaction has already been responded to before
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 621
+    try:
+IndentationError: unexpected indent
+[2025-03-25 12:37:57] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:37:58] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f1252f633f3c13a057c4060d0651373f).
+[2025-03-25 12:38:05] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:38:05] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8ab1aa1e114772184144efbb378d5f59).
+[2025-03-25 12:47:52] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:47:53] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e1419056895e12b4d8f3defb62f8485f).
+[2025-03-25 12:48:41] [ERROR   ] discord.ui.modal: Ignoring exception in modal <FineModal timeout=None children=3>:
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/modal.py", line 189, in _scheduled_task
+    await self.on_submit(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 144, in on_submit
+    ctx = await bot.get_context(interaction.message)
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ext/commands/bot.py", line 1299, in get_context
+    view = StringView(origin.content)
+AttributeError: 'NoneType' object has no attribute 'content'
+[2025-03-25 12:49:45] [INFO    ] discord.client: logging in using static token
+[2025-03-25 12:49:47] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e6fb9778f0830be33968aa1878f92b1f).
+[2025-03-25 12:50:57] [ERROR   ] discord.ui.view: Ignoring exception in view <CommandControlPanel timeout=None children=8> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='💰 Баланс' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/view.py", line 435, in _scheduled_task
+    await item.callback(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 252, in balance_button
+    await self.update_message(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 244, in update_message
+    await interaction.response.edit_message(view=CommandControlPanel())
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/interactions.py", line 1114, in edit_message
+    raise InteractionResponded(self._parent)
+discord.errors.InteractionResponded: This interaction has already been responded to before
+[2025-03-25 13:01:25] [INFO    ] discord.client: logging in using static token
+[2025-03-25 13:01:26] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9bb904fd211cb7a8dab1e349f0788e49).
+[2025-03-25 13:03:15] [INFO    ] discord.client: logging in using static token
+[2025-03-25 13:03:16] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8e054f1093aeb6293eae9f26da22b7b5).
+[2025-03-25 13:04:23] [INFO    ] discord.client: logging in using static token
+[2025-03-25 13:04:24] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: fa900efcb83bb80b83ed6941cde97230).

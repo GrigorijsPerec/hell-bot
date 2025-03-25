@@ -1241,3 +1241,43 @@ discord.errors.NotFound: 404 Not Found (error code: 10008): Unknown Message
 2025-03-20 21:37:15,615 - INFO - Штраф выдан: haldorrgen | Сумма: 11231 | Причина: 123213 | Выдал: haldorrgen
 2025-03-20 21:37:15,644 - INFO - Штраф выдан: haldorrgen | Сумма: 11231 | Причина: 123213 | Выдал: haldorrgen
 2025-03-20 21:38:29,170 - INFO - Штраф выдан: haldorrgen | Сумма: 123213123 | Причина: 12312321 | Выдал: haldorrgen
+2025-03-25 12:47:52,952 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-25 12:47:52,956 - INFO - logging in using static token
+2025-03-25 12:47:53,812 - INFO - Shard ID None has connected to Gateway (Session ID: e1419056895e12b4d8f3defb62f8485f).
+2025-03-25 12:47:55,829 - INFO - Р‘РѕС‚ РЎРµРєСЂРµС‚Р°СЂСЊ#1905 Р·Р°РїСѓС‰РµРЅ!
+2025-03-25 12:48:41,365 - ERROR - Ignoring exception in modal <FineModal timeout=None children=3>:
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/modal.py", line 189, in _scheduled_task
+    await self.on_submit(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 144, in on_submit
+    ctx = await bot.get_context(interaction.message)
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ext/commands/bot.py", line 1299, in get_context
+    view = StringView(origin.content)
+AttributeError: 'NoneType' object has no attribute 'content'
+2025-03-25 12:49:45,995 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-25 12:49:45,998 - INFO - logging in using static token
+2025-03-25 12:49:47,003 - INFO - Shard ID None has connected to Gateway (Session ID: e6fb9778f0830be33968aa1878f92b1f).
+2025-03-25 12:49:49,023 - INFO - Р‘РѕС‚ РЎРµРєСЂРµС‚Р°СЂСЊ#1905 Р·Р°РїСѓС‰РµРЅ!
+2025-03-25 12:50:57,688 - ERROR - Ignoring exception in view <CommandControlPanel timeout=None children=8> for item <Button style=<ButtonStyle.primary: 1> url=None disabled=False label='рџ’° Р‘Р°Р»Р°РЅСЃ' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/ui/view.py", line 435, in _scheduled_task
+    await item.callback(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 252, in balance_button
+    await self.update_message(interaction)
+  File "/root/discord-bot/hell-bot/v1/main-app/main.py", line 244, in update_message
+    await interaction.response.edit_message(view=CommandControlPanel())
+  File "/root/discord-bot/hell-bot/v1/main-app/venv/lib/python3.10/site-packages/discord/interactions.py", line 1114, in edit_message
+    raise InteractionResponded(self._parent)
+discord.errors.InteractionResponded: This interaction has already been responded to before
+2025-03-25 13:01:25,486 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-25 13:01:25,490 - INFO - logging in using static token
+2025-03-25 13:01:26,491 - INFO - Shard ID None has connected to Gateway (Session ID: 9bb904fd211cb7a8dab1e349f0788e49).
+2025-03-25 13:01:28,508 - INFO - Р‘РѕС‚ РЎРµРєСЂРµС‚Р°СЂСЊ#1905 Р·Р°РїСѓС‰РµРЅ!
+2025-03-25 13:03:15,386 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-25 13:03:15,390 - INFO - logging in using static token
+2025-03-25 13:03:16,267 - INFO - Shard ID None has connected to Gateway (Session ID: 8e054f1093aeb6293eae9f26da22b7b5).
+2025-03-25 13:03:18,293 - INFO - Р‘РѕС‚ РЎРµРєСЂРµС‚Р°СЂСЊ#1905 Р·Р°РїСѓС‰РµРЅ!
+2025-03-25 13:04:23,598 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-03-25 13:04:23,604 - INFO - logging in using static token
+2025-03-25 13:04:24,518 - INFO - Shard ID None has connected to Gateway (Session ID: fa900efcb83bb80b83ed6941cde97230).
+2025-03-25 13:04:26,537 - INFO - Р‘РѕС‚ РЎРµРєСЂРµС‚Р°СЂСЊ#1905 Р·Р°РїСѓС‰РµРЅ!
