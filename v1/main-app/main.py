@@ -1242,7 +1242,7 @@ async def link_telegram_cmd(ctx):
         
         try:
             await ctx.author.send(embed=embed)
-            await ctx.send("✅ Инструкции отправлены вам в личные сообщения!", delete_after=5)
+            await ctx.send("✅ Инструкции отправлены вам в личные сообщения!")
         except discord.Forbidden:
             await ctx.send("❌ Не удалось отправить вам личное сообщение. Пожалуйста, откройте личные сообщения.")
             
