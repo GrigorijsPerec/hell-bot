@@ -10,8 +10,7 @@ import asyncio
 from discord.ui import View, Button, Modal, TextInput
 import secrets
 import aiohttp
-from aiogram import Bot as TelegramBot
-from aiogram.types import Message as TelegramMessage
+from aiogram import Bot as TelegramBot, Dispatcher, types
 from aiogram.utils import executor
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
@@ -1451,29 +1450,24 @@ async def start_telegram_bot():
     try:
         # Удаляем старые вебхуки
         await telegram_bot.delete_webhook(drop_pending_updates=True)
-        # Запускаем поллинг
-        await telegram_bot.polling(non_stop=True)
+        # Запускаем поллинг в отдельном потоке
+        executor.start_polling(dp, skip_updates=True)
     except Exception as e:
         logging.error(f"Ошибка запуска Telegram бота: {e}")
 
 # Добавляем запуск Telegram бота в основной цикл
-async def main():
+def main():
     """Основная функция запуска ботов"""
     try:
-        # Запускаем оба бота
-        await asyncio.gather(
-            bot.start(DISCORD_TOKEN),
-            start_telegram_bot()
-        )
+        # Запускаем Discord бота
+        bot.run(DISCORD_TOKEN)
     except Exception as e:
         logging.error(f"Ошибка в main: {e}")
     finally:
         # Закрываем сессии
-        await asyncio.gather(
-            bot.close(),
-            telegram_bot.session.close()
-        )
+        if telegram_bot.session:
+            asyncio.run(telegram_bot.session.close())
 
 # Запускаем ботов
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
