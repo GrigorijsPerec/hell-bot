@@ -8,7 +8,6 @@ from datetime import datetime, timedelta  # Импорт классов для �
 from dotenv import load_dotenv  # Импорт функции для загрузки переменных окружения из файла .env
 import asyncio
 from discord.ui import View, Button, Modal, TextInput
-
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
 
@@ -35,6 +34,8 @@ CONTENT_MAKER_ROLE_ID = config["CONTENT_MAKER_ROLE_ID"]
 FINANCIER_ROLE_ID = config["FINANCIER_ROLE_ID"]
 FINE_ROLE_ID = config["FINE_ROLE_ID"]
 DM_LOG_CHANNEL_ID = config["DM_LOG_CHANNEL_ID"]
+LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда отправляются все логи
+
 
 # Для пересылки сообщений по мапе будем использовать данные из config["role_channel_map"]
 # Убираем жестко заданный channel_role_map
@@ -51,9 +52,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
-import discord
-from discord.ext import commands
-from discord.ui import View, Button, Modal, TextInput
+
 
 # --- Модальные окна для управления балансом ---
 
@@ -239,55 +238,49 @@ class CommandControlPanel(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    async def update_message(self, interaction: discord.Interaction):
-        """Обновляет сообщение с кнопками, чтобы они не устаревали"""
-        await interaction.response.edit_message(view=CommandControlPanel())
+    async def log_button_action(self, interaction, message):
+        """Функция для логирования действий кнопок"""
+        log_channel = bot.get_channel(LOG_ALL_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(f"📌 **Кнопка нажата:** {message}")
 
     @discord.ui.button(label="💰 Баланс", style=discord.ButtonStyle.primary)
     async def balance_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.defer(ephemeral=True)
         user = interaction.user
         current_balance = balance_manager.get_balance(user.id)
-        await interaction.followup.send(f"💰 {user.mention}, ваш баланс: {current_balance} серебра.", ephemeral=True)
-        await self.update_message(interaction)
+        response = f"💰 {user.mention}, ваш баланс: {current_balance} серебра."
+        await interaction.response.send_message(response, ephemeral=True)
+        await self.log_button_action(interaction, response)
 
     @discord.ui.button(label="💸 Пополнить баланс", style=discord.ButtonStyle.success)
     async def deposit_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(DepositModal())
+        await self.log_button_action(interaction, "Открыто модальное окно пополнения баланса.")
 
     @discord.ui.button(label="💳 Снять баланс", style=discord.ButtonStyle.danger)
     async def withdraw_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(WithdrawModal())
+        await self.log_button_action(interaction, "Открыто модальное окно снятия баланса.")
 
     @discord.ui.button(label="🔄 Перевести", style=discord.ButtonStyle.primary)
     async def transfer_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(TransferModal())
+        await self.log_button_action(interaction, "Открыто модальное окно перевода средств.")
 
     @discord.ui.button(label="🕒 История баланса", style=discord.ButtonStyle.secondary)
     async def history_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(HistoryModal())
+        await self.log_button_action(interaction, "Открыто модальное окно истории баланса.")
 
     @discord.ui.button(label="⚖️ Штраф", style=discord.ButtonStyle.danger)
     async def fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(FineModal())
+        await self.log_button_action(interaction, "Открыто модальное окно выдачи штрафа.")
 
     @discord.ui.button(label="✅ Закрыть штраф", style=discord.ButtonStyle.success)
     async def close_fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(CloseFineModal())
-
-    @discord.ui.button(label="🗑️ Очистить канал", style=discord.ButtonStyle.danger)
-    async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.defer(ephemeral=True)
-        ctx = await bot.get_context(interaction.message)
-        channel = ctx.channel
-
-        try:
-            pinned_messages = await channel.pins()
-            pinned_ids = [msg.id for msg in pinned_messages]
-            deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
-            await interaction.followup.send(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
-        except Exception as e:
-            await interaction.followup.send(f"❌ Ошибка при очистке канала: {str(e)}", ephemeral=True)
+        await self.log_button_action(interaction, "Открыто модальное окно закрытия штрафа.")
 
 
 
@@ -385,6 +378,13 @@ async def on_ready():
     logging.info(f"Бот {bot.user} запущен!")
     print(f"Бот {bot.user} запущен!")
     print("Зарегистрированные команды:", [cmd.name for cmd in bot.commands])
+
+async def log_bot_response(ctx, message):
+    """Отправляет сообщение в лог-канал"""
+    log_channel = bot.get_channel(LOG_ALL_CHANNEL_ID)
+    if log_channel:
+        await log_channel.send(f"📝 **Ответ бота:** {message}")
+
 
 # ==============================
 # Команды для управления мапой (роль -> каналы)
@@ -603,26 +603,34 @@ async def balance(ctx):
 
 @balance.command(name="deposit")
 async def balance_deposit(ctx, member: discord.Member, amount: int):
-    if not await has_role(ctx.author, FINANCIER_ROLE_ID):
-        await ctx.send("У вас нет прав для пополнения баланса.")
-        return
     try:
         balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Deposit command")
-        await ctx.send(messages["balance_deposit_success"].format(member_mention=member.mention, amount=amount))
+        response = f"💰 Баланс {member.mention} пополнен на {amount} серебра."
+        await ctx.send(response)
+        await log_bot_response(ctx, response)
     except Exception as e:
-        await ctx.send(f"Ошибка: {str(e)}")
+        error_message = f"❌ Ошибка: {str(e)}"
+        await ctx.send(error_message)
+        await log_bot_response(ctx, error_message)
+
 
 @balance.command(name="withdraw")
 async def balance_withdraw(ctx, member: discord.Member, amount: int):
     if not await has_role(ctx.author, FINANCIER_ROLE_ID):
-        print(member.roles, ctx.author.roles)
-        await ctx.send("У вас нет прав для снятия средств.")
+        response = "❌ У вас нет прав для снятия средств."
+        await ctx.send(response)
+        await log_bot_response(ctx, response)
         return
     try:
         balance_manager.withdraw(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Withdraw command")
-        await ctx.send(messages["balance_withdraw_success"].format(member_mention=member.mention, amount=amount))
+        response = f"💳 Снято {amount} серебра у {member.mention}."
+        await ctx.send(response)
+        await log_bot_response(ctx, response)
     except Exception as e:
-        await ctx.send(f"Ошибка: {str(e)}")
+        error_message = f"❌ Ошибка: {str(e)}"
+        await ctx.send(error_message)
+        await log_bot_response(ctx, error_message)
+
 
 @balance.command(name="transfer")
 async def balance_transfer(ctx, member: discord.Member, amount: int):
@@ -630,9 +638,13 @@ async def balance_transfer(ctx, member: discord.Member, amount: int):
         balance_manager.transfer(ctx.author.id, member.id, amount, 
                                  from_nickname=ctx.author.display_name, to_nickname=member.display_name,
                                  note="Transfer command")
-        await ctx.send(messages["balance_transfer_success"].format(sender_mention=ctx.author.mention, recipient_mention=member.mention, amount=amount))
+        response = f"🔄 {amount} серебра переведено {member.mention}."
+        await ctx.send(response)
+        await log_bot_response(ctx, response)
     except Exception as e:
-        await ctx.send(f"Ошибка: {str(e)}")
+        error_message = f"❌ Ошибка: {str(e)}"
+        await ctx.send(error_message)
+        await log_bot_response(ctx, error_message)
 
 @balance.command(name="top")
 async def balance_top(ctx):
