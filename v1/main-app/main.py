@@ -413,14 +413,10 @@ class TelegramView(View):
 
     @discord.ui.button(label="🔗 Привязать Telegram", style=discord.ButtonStyle.success)
     async def link_telegram_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_message(
-            "🔗 **Как привязать Telegram к боту:**\n\n"
-            "1. Добавьте бота @HellBranch_bot в Telegram\n"
-            "2. Отправьте ему команду `/start`\n"
-            "3. Следуйте инструкциям бота\n\n"
-            "После привязки вы будете получать уведомления в обоих мессенджерах!",
-            ephemeral=True
-        )
+        ctx = await bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        await bot.get_command("link_telegram").callback(ctx)
+        await interaction.response.send_message("✅ Команда для привязки Telegram отправлена в ваши личные сообщения!", ephemeral=True)
 
 @bot.command(name="telegram_panel")
 async def create_telegram_panel(ctx):
