@@ -334,8 +334,10 @@ async def панель(ctx):
         description="Выбери нужную команду с помощью кнопок.",
         color=discord.Color.blurple()
     )
-    await ctx.send(embed=embed, view=CommandControlPanel())
 
+    view = CommandControlPanel()
+    message = await ctx.send(embed=embed, view=view)
+    view.message = message  # Привязываем View к сообщению
 
 # Функция для загрузки сообщений из файла messages.json
 def load_messages():
