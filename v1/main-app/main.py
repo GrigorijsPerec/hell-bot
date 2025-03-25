@@ -142,12 +142,30 @@ class FineModal(Modal, title="Выдать штраф"):
     async def on_submit(self, interaction: discord.Interaction):
         ctx = await bot.get_context(interaction.message)
         try:
-            member_obj = interaction.guild.get_member(int(self.member.value))
+            # Проверяем, введён ли ID
+            member_text = self.member.value.strip()
+            member_obj = None
+            
+            if member_text.isdigit():
+                member_obj = interaction.guild.get_member(int(member_text))
+            else:
+                # Проверяем, введено ли @упоминание
+                mention_match = re.match(r"<@!?(\d+)>", member_text)
+                if mention_match:
+                    member_id = int(mention_match.group(1))
+                    member_obj = interaction.guild.get_member(member_id)
+
+            if not member_obj:
+                await interaction.response.send_message("❌ Пользователь не найден.", ephemeral=True)
+                return
+
             amount_value = int(self.amount.value)
             await bot.get_command("fine").callback(ctx, member_obj, amount_value, self.reason.value)
             await interaction.response.send_message(f"🚫 Штраф {member_obj.display_name} на {amount_value} серебра.", ephemeral=True)
+        except ValueError as e:
+            await interaction.response.send_message(f"❌ Ошибка: неверное значение. {str(e)}", ephemeral=True)
         except Exception as e:
-            await interaction.response.send_message("❌ Ошибка: неверные данные.", ephemeral=True)
+            await interaction.response.send_message(f"❌ Ошибка: {str(e)}", ephemeral=True)
 
 
 class CloseFineModal(Modal, title="Закрыть штраф"):
