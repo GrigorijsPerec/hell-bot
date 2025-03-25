@@ -318,7 +318,7 @@ class BalanceView(View):
     async def balance_top_button(self, interaction: discord.Interaction, button: Button):
         top_list = balance_manager.top_balances()
         msg = "🏆 Топ участников по балансу:\n\n"
-        for i, (member_id, bal, nickname) in enumerate(top_list[:40], 1):
+        for i, (member_id, bal, nickname) in enumerate(top_list[:], 1):
             name = nickname if nickname else str(member_id)
             msg += f"{i}. {name}: {bal} серебра\n"
         await interaction.response.send_message(msg, ephemeral=True)
@@ -334,7 +334,7 @@ async def create_balance_panel(ctx):
         title="💰 Панель управления балансом",
         description="Нажмите на кнопки ниже, чтобы:\n\n"
                    "💰 **Мой баланс** - посмотреть свой текущий баланс\n"
-                   "🏆 **Топ баланса** - посмотреть топ-10 участников по балансу",
+                   "🏆 **Топ баланса** - посмотреть топ участников по балансу",
         color=discord.Color.gold()
     )
     
@@ -697,7 +697,7 @@ class BalanceManager:
 
 
 
-    def top_balances(self, top_n=40):
+    def top_balances(self, top_n=100):
         with self.get_connection() as conn:
             c = conn.cursor()
             c.execute("SELECT member_id, balance, nickname FROM balances ORDER BY balance DESC LIMIT ?", (top_n,))
