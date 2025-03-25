@@ -421,6 +421,7 @@ class TelegramView(View):
         ctx = await bot.get_context(interaction.message)
         ctx.author = interaction.user
         await bot.get_command("link_telegram").callback(ctx)
+        await interaction.followup.send("✅ Инструкции отправлены вам в личные сообщения!", ephemeral=True)
 
 @bot.command(name="telegram_panel")
 async def create_telegram_panel(ctx):
