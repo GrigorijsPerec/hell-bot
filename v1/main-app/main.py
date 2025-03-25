@@ -12,6 +12,7 @@ import secrets
 import aiohttp
 from aiogram import Bot as TelegramBot, Dispatcher, types
 from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
@@ -46,7 +47,10 @@ DM_LOG_CHANNEL_ID = config["DM_LOG_CHANNEL_ID"]
 LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда отправляются все логи
 
 # Инициализация Telegram бота
-telegram_bot = TelegramBot(token=TELEGRAM_TOKEN, parse_mode=ParseMode.MARKDOWN)
+telegram_bot = TelegramBot(
+    token=TELEGRAM_TOKEN,
+    default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN)
+)
 dp = Dispatcher()
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
