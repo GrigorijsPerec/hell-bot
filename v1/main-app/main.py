@@ -281,7 +281,18 @@ class CommandControlPanel(View):
     async def close_fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(CloseFineModal())
         await self.log_button_action(interaction, "Открыто модальное окно закрытия штрафа.")
-
+    @discord.ui.button(label="🗑️ Очистить канал", style=discord.ButtonStyle.danger)
+    async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.defer(ephemeral=True)
+        ctx = await bot.get_context(interaction.message)
+        channel = ctx.channel
+        try:
+            pinned_messages = await channel.pins()
+            pinned_ids = [msg.id for msg in pinned_messages]
+            deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
+            await interaction.followup.send(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(f"❌ Ошибка при очистке канала: {str(e)}", ephemeral=True)
 
 
 # --- Команда для вызова панели управления ---
