@@ -433,7 +433,11 @@ async def create_telegram_panel(ctx):
     embed = discord.Embed(
         title="🔗 Панель управления Telegram",
         description="Нажмите на кнопку ниже, чтобы получить инструкции по привязке Telegram аккаунта.\n\n"
-                   "После привязки вы будете получать уведомления в обоих мессенджерах!",
+                   "После привязки вы будете получать уведомления в обоих мессенджерах!\n\n"
+                   "VK - https://vk.com/hell_branch\n"
+                   "YouTube - https://youtube.com/@6beastofnonation9?si=ezsIKf5WWHzyBB13\n"
+                   "Twitch - https://www.twitch.tv/hell_branch\n"
+                   "Instagram - https://www.instagram.com/_hell_branch_?igsh=cWQzZXo0ODBhYWRs",
         color=discord.Color.blue()
     )
     
