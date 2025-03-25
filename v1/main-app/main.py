@@ -848,6 +848,18 @@ async def party_notify(ctx, party_id: int, *, message_text: str):
 # ==============================
 # Команды для управления штрафами
 # ==============================
+def sync_fines_with_balance(user_id):
+    """Синхронизирует баланс пользователя с его активными штрафами"""
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        # Получаем сумму активных штрафов
+        c.execute("SELECT COALESCE(SUM(amount), 0) FROM fines WHERE user_id = ? AND is_closed = 0", (str(user_id),))
+        total_fines = c.fetchone()[0]
+        
+        # Обновляем баланс пользователя
+        c.execute("INSERT OR REPLACE INTO balances (member_id, balance) VALUES (?, -?)", (str(user_id), total_fines))
+        conn.commit()
+
 @bot.command(name="fine")
 async def issue_fine(ctx, user: discord.Member, amount: int, *, reason: str = "Без причины"):
     if not await has_role(ctx.author, FINANCIER_ROLE_ID):
@@ -855,51 +867,51 @@ async def issue_fine(ctx, user: discord.Member, amount: int, *, reason: str = "�
         return
 
     try:
-        # Снимаем средства, даже если баланс уходит в минус (withdraw уже позволяет)
-        balance_manager.withdraw(user.id, amount, nickname=user.display_name, by=ctx.author.id, note=f"Fine: {reason}")
+        # Логируем штраф в базу
+        with sqlite3.connect(DB_NAME) as conn:
+            c = conn.cursor()
+            c.execute("INSERT INTO fines (user_id, amount, reason) VALUES (?, ?, ?)", (str(user.id), amount, reason))
+            fine_id = c.lastrowid
+            conn.commit()
+
+        # Синхронизируем баланс
+        sync_fines_with_balance(user.id)
+
+        # Создаём embed-уведомление
+        embed = discord.Embed(
+            title="🚫 **Новый штраф!** 🚫",
+            color=discord.Color.red()
+        )
+        embed.add_field(name="**Нарушитель:**", value=user.mention, inline=False)
+        embed.add_field(name="**Размер штрафа:**", value=f"{amount} серебра", inline=False)
+        embed.add_field(name="**Причина:**", value=reason, inline=False)
+        embed.add_field(name="**Выдал штраф:**", value=ctx.author.mention, inline=False)
+        embed.add_field(name="**Номер штрафа:**", value=fine_id, inline=False)
+
+        fine_channel = ctx.guild.get_channel(FINE_CHANNEL_ID)
+        if fine_channel:
+            await fine_channel.send(embed=embed)
+
+        fine_role = discord.utils.get(ctx.guild.roles, id=FINE_ROLE_ID)
+        if fine_role and fine_role not in user.roles:
+            await user.add_roles(fine_role)
+
+        # Пробуем отправить сообщение в личку нарушителю
+        try:
+            await user.send(embed=embed)
+            status_msg = messages["fine_sent_to_dm"].format(user_mention=user.mention)
+        except discord.Forbidden:
+            status_msg = messages["fine_failed_to_dm"].format(user_mention=user.mention)
+
+        log_channel = ctx.guild.get_channel(LOG_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(f"✅ Штраф для {user.mention} отправлен в {fine_channel.mention}!")
+            await log_channel.send(status_msg)
+
+        logging.info(f"Штраф выдан: {user} | Сумма: {amount} | Причина: {reason} | Выдал: {ctx.author}")
+
     except Exception as e:
-        await ctx.send(messages["fine_invalid_amount"].format(error_message=str(e)))
-        return
-
-    # Логируем штраф в базу
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute("INSERT INTO fines (user_id, amount, reason) VALUES (?, ?, ?)", (str(user.id), amount, reason))
-        fine_id = c.lastrowid
-        conn.commit()
-
-    # Создаём embed-уведомление
-    embed = discord.Embed(
-        title="🚫 **Новый штраф!** 🚫",
-        color=discord.Color.red()
-    )
-    embed.add_field(name="**Нарушитель:**", value=user.mention, inline=False)
-    embed.add_field(name="**Размер штрафа:**", value=f"{amount} серебра", inline=False)
-    embed.add_field(name="**Причина:**", value=reason, inline=False)
-    embed.add_field(name="**Выдал штраф:**", value=ctx.author.mention, inline=False)
-    embed.add_field(name="**Номер штрафа:**", value=fine_id, inline=False)
-
-    fine_channel = ctx.guild.get_channel(FINE_CHANNEL_ID)
-    if fine_channel:
-        await fine_channel.send(embed=embed)
-
-    fine_role = discord.utils.get(ctx.guild.roles, id=FINE_ROLE_ID)
-    if fine_role and fine_role not in user.roles:
-        await user.add_roles(fine_role)
-
-    # Пробуем отправить сообщение в личку нарушителю
-    try:
-        await user.send(embed=embed)
-        status_msg = messages["fine_sent_to_dm"].format(user_mention=user.mention)
-    except discord.Forbidden:
-        status_msg = messages["fine_failed_to_dm"].format(user_mention=user.mention)
-
-    log_channel = ctx.guild.get_channel(LOG_CHANNEL_ID)
-    if log_channel:
-        await log_channel.send(f"✅ Штраф для {user.mention} отправлен в {fine_channel.mention}!")
-        await log_channel.send(status_msg)
-
-    logging.info(f"Штраф выдан: {user} | Сумма: {amount} | Причина: {reason} | Выдал: {ctx.author}")
+        await ctx.send(f"❌ Ошибка при выдаче штрафа: {str(e)}")
 
 @bot.command(name="close_fine")
 async def close_fine(ctx, fine_id: int):
@@ -912,7 +924,7 @@ async def close_fine(ctx, fine_id: int):
             await ctx.send(f"❗ Штраф с номером `{fine_id}` не найден.")
             return
         
-        user_id, is_closed = result  # Теперь user_id точно определён
+        user_id, is_closed = result
         
         if is_closed == 1:
             await ctx.send(f"❗ Штраф с номером `{fine_id}` уже закрыт.")
@@ -920,6 +932,9 @@ async def close_fine(ctx, fine_id: int):
         
         c.execute("UPDATE fines SET is_closed = 1 WHERE id = ?", (fine_id,))
         conn.commit()
+
+    # Синхронизируем баланс после закрытия штрафа
+    sync_fines_with_balance(user_id)
 
     # Получаем объект пользователя
     user = ctx.guild.get_member(int(user_id))
