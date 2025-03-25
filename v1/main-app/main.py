@@ -1149,5 +1149,60 @@ async def get_user_id(ctx, username: str):
     if not found:
         await ctx.send(f"❌ Пользователь с ником '{username}' не найден.")
 
+@bot.command(name="update_balances")
+@commands.has_permissions(administrator=True)
+async def update_balances(ctx, *, data: str):
+    """Временная команда для массового обновления балансов"""
+    try:
+        # Разбиваем данные по строкам
+        lines = data.strip().split('\n')
+        updated = 0
+        errors = []
+
+        for line in lines:
+            try:
+                # Пропускаем пустые строки
+                if not line.strip():
+                    continue
+                    
+                # Парсим строку
+                parts = line.split(':')
+                if len(parts) != 2:
+                    errors.append(f"Неверный формат строки: {line}")
+                    continue
+
+                # Получаем имя пользователя и сумму
+                username = parts[0].split('|')[0].strip().strip('@')
+                amount = int(parts[1].strip().replace(' ', ''))
+
+                # Ищем пользователя
+                member = None
+                for guild_member in ctx.guild.members:
+                    if username.lower() in guild_member.name.lower() or (guild_member.nick and username.lower() in guild_member.nick.lower()):
+                        member = guild_member
+                        break
+
+                if member:
+                    # Обновляем баланс
+                    balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Mass balance update")
+                    updated += 1
+                else:
+                    errors.append(f"Пользователь не найден: {username}")
+
+            except ValueError as e:
+                errors.append(f"Ошибка в строке '{line}': {str(e)}")
+            except Exception as e:
+                errors.append(f"Непредвиденная ошибка в строке '{line}': {str(e)}")
+
+        # Отправляем отчет
+        report = f"✅ Обновлено балансов: {updated}\n"
+        if errors:
+            report += "\n❌ Ошибки:\n" + "\n".join(errors)
+        
+        await ctx.send(report)
+
+    except Exception as e:
+        await ctx.send(f"❌ Ошибка при обработке данных: {str(e)}")
+
 # Запуск бота с использованием токена из переменных окружения
 bot.run(TOKEN)
