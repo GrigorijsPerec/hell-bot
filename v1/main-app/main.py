@@ -614,10 +614,10 @@ async def balance_deposit(ctx, member: discord.Member, amount: int):
 
 @balance.command(name="withdraw")
 async def balance_withdraw(ctx, member: discord.Member, amount: int):
-    if not await has_role(ctx.author, FINANCIER_ROLE_ID):
-        print(member.roles, ctx.author.roles)
-        await ctx.send("У вас нет прав для снятия средств.")
-        return
+#    if not await has_role(ctx.author, FINANCIER_ROLE_ID):
+#        print(member.roles, ctx.author.roles)
+#        await ctx.send("У вас нет прав для снятия средств.")
+#        return
     try:
         balance_manager.withdraw(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Withdraw command")
         await ctx.send(messages["balance_withdraw_success"].format(member_mention=member.mention, amount=amount))
