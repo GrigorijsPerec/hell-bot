@@ -239,12 +239,17 @@ class CommandControlPanel(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    # Команды для баланса
+    async def update_message(self, interaction: discord.Interaction):
+        """Обновляет сообщение с кнопками, чтобы они не устаревали"""
+        await interaction.response.edit_message(view=CommandControlPanel())
+
     @discord.ui.button(label="💰 Баланс", style=discord.ButtonStyle.primary)
     async def balance_button(self, interaction: discord.Interaction, button: Button):
-        user = interaction.user  # Получаем пользователя, который нажал на кнопку
-        current_balance = balance_manager.get_balance(user.id)  # Получаем баланс этого пользователя
-        await interaction.response.send_message(f"💰 {user.mention}, ваш баланс: {current_balance} серебра.", ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
+        user = interaction.user
+        current_balance = balance_manager.get_balance(user.id)
+        await interaction.followup.send(f"💰 {user.mention}, ваш баланс: {current_balance} серебра.", ephemeral=True)
+        await self.update_message(interaction)
 
     @discord.ui.button(label="💸 Пополнить баланс", style=discord.ButtonStyle.success)
     async def deposit_button(self, interaction: discord.Interaction, button: Button):
@@ -262,7 +267,6 @@ class CommandControlPanel(View):
     async def history_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(HistoryModal())
 
-    # Команды для штрафов
     @discord.ui.button(label="⚖️ Штраф", style=discord.ButtonStyle.danger)
     async def fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(FineModal())
@@ -271,59 +275,21 @@ class CommandControlPanel(View):
     async def close_fine_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(CloseFineModal())
 
-    # Команды для управления канал-ролью
-    @discord.ui.button(label="➕ Добавить канал-роль", style=discord.ButtonStyle.primary)
-    async def add_channel_role_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(AddChannelRoleModal())
-
-    @discord.ui.button(label="➖ Удалить канал-роль", style=discord.ButtonStyle.danger)
-    async def remove_channel_role_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(RemoveChannelRoleModal())
-
-    @discord.ui.button(label="📜 Список канал-роли", style=discord.ButtonStyle.secondary)
-    async def list_channel_roles_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("list_channel_roles").callback(ctx)
-        await interaction.response.send_message("✅ Список канал-роли отправлен.", ephemeral=True)
-
-    @discord.ui.button(label="📝 Обновить сообщение", style=discord.ButtonStyle.secondary)
-    async def update_message_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(UpdateMessageModal())
-
-    @discord.ui.button(label="✉️ Отправить ЛС", style=discord.ButtonStyle.secondary)
-    async def m_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(SendMessageModal())
-
-    # Команды для сборов и помощи
-    @discord.ui.button(label="🎉 Сборы", style=discord.ButtonStyle.success)
-    async def party_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("party").callback(ctx)
-        await interaction.response.send_message("✅ Информация о сборах отправлена.", ephemeral=True)
-
-    @discord.ui.button(label="❓ Помощь", style=discord.ButtonStyle.secondary)
-    async def help_button(self, interaction: discord.Interaction, button: Button):
-        ctx = await bot.get_context(interaction.message)
-        await bot.get_command("help").callback(ctx)
-        await interaction.response.send_message("✅ Помощь отправлена.", ephemeral=True)
-
-    # Новая кнопка для очистки канала
     @discord.ui.button(label="🗑️ Очистить канал", style=discord.ButtonStyle.danger)
     async def clear_channel_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.defer(ephemeral=True)  # Мгновенный ответ, предотвращает таймаут
-        
+        await interaction.response.defer(ephemeral=True)
         ctx = await bot.get_context(interaction.message)
         channel = ctx.channel
 
         try:
             pinned_messages = await channel.pins()
             pinned_ids = [msg.id for msg in pinned_messages]
-
             deleted = await channel.purge(check=lambda m: m.id not in pinned_ids)
             await interaction.followup.send(f"🗑️ Удалено {len(deleted)} сообщений (кроме закреплённых).", ephemeral=True)
-
         except Exception as e:
             await interaction.followup.send(f"❌ Ошибка при очистке канала: {str(e)}", ephemeral=True)
+
+
 
 # --- Команда для вызова панели управления ---
 @bot.command()
@@ -334,10 +300,8 @@ async def панель(ctx):
         description="Выбери нужную команду с помощью кнопок.",
         color=discord.Color.blurple()
     )
+    await ctx.send(embed=embed, view=CommandControlPanel())
 
-    view = CommandControlPanel()
-    message = await ctx.send(embed=embed, view=view)
-    view.message = message  # Привязываем View к сообщению
 
 # Функция для загрузки сообщений из файла messages.json
 def load_messages():
@@ -639,9 +603,9 @@ async def balance(ctx):
 
 @balance.command(name="deposit")
 async def balance_deposit(ctx, member: discord.Member, amount: int):
-    if not await has_role(ctx.author, FINANCIER_ROLE_ID):
-        await ctx.send("У вас нет прав для пополнения баланса.")
-        return
+#    if not await has_role(ctx.author, FINANCIER_ROLE_ID):
+#        await ctx.send("У вас нет прав для пополнения баланса.")
+#        return
     try:
         balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Deposit command")
         await ctx.send(messages["balance_deposit_success"].format(member_mention=member.mention, amount=amount))
