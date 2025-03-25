@@ -420,6 +420,7 @@ class TelegramView(View):
         ctx = await bot.get_context(interaction.message)
         ctx.author = interaction.user
         await bot.get_command("link_telegram").callback(ctx)
+        await interaction.response.defer(ephemeral=True)
 
 @bot.command(name="telegram_panel")
 async def create_telegram_panel(ctx):
@@ -436,7 +437,6 @@ async def create_telegram_panel(ctx):
     )
     
     await ctx.send(embed=embed, view=TelegramView())
-    await ctx.message.delete()
 
 @bot.command(name="balance_panel")
 async def create_balance_panel(ctx):
