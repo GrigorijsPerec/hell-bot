@@ -8,13 +8,23 @@ from datetime import datetime, timedelta  # Импорт классов для �
 from dotenv import load_dotenv  # Импорт функции для загрузки переменных окружения из файла .env
 import asyncio
 from discord.ui import View, Button, Modal, TextInput
+import secrets
+import aiohttp
+from aiogram import Bot as TelegramBot
+from aiogram.types import Message as TelegramMessage
+from aiogram.utils import executor
+
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
 
-# Получение токена бота из переменных окружения
-TOKEN = os.getenv("DISCORD_BOT_TOKEN")
-if not TOKEN:
-    raise ValueError("DISCORD_BOT_TOKEN не найден. Убедитесь, что он задан в переменных окружения или в файле .env")
+# Получение токенов из переменных окружения
+DISCORD_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+if not DISCORD_TOKEN:
+    raise ValueError("DISCORD_BOT_TOKEN не найден в переменных окружения")
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_BOT_TOKEN не найден в переменных окружения")
 
 # Настройка логирования: все логи записываются в файл 'bot.json'
 logging.basicConfig(filename='../bot.json', level=logging.INFO,
@@ -36,9 +46,9 @@ FINE_ROLE_ID = config["FINE_ROLE_ID"]
 DM_LOG_CHANNEL_ID = config["DM_LOG_CHANNEL_ID"]
 LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда отправляются все логи
 
-
-# Для пересылки сообщений по мапе будем использовать данные из config["role_channel_map"]
-# Убираем жестко заданный channel_role_map
+# Инициализация Telegram бота
+telegram_bot = TelegramBot(token=TELEGRAM_TOKEN)
+dp = Dispatcher(telegram_bot)
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
 intents = discord.Intents.default()
@@ -51,8 +61,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
-
-
 
 # --- Модальные окна для управления балансом ---
 
@@ -318,10 +326,21 @@ class BalanceView(View):
     async def balance_top_button(self, interaction: discord.Interaction, button: Button):
         top_list = balance_manager.top_balances()
         msg = "🏆 Топ участников по балансу:\n\n"
-        for i, (member_id, bal, nickname) in enumerate(top_list[:], 1):
+        for i, (member_id, bal, nickname) in enumerate(top_list[:40], 1):
             name = nickname if nickname else str(member_id)
             msg += f"{i}. {name}: {bal} серебра\n"
         await interaction.response.send_message(msg, ephemeral=True)
+
+    @discord.ui.button(label="🔗 Привязать Telegram", style=discord.ButtonStyle.success)
+    async def link_telegram_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_message(
+            "🔗 **Как привязать Telegram к боту:**\n\n"
+            "1. Добавьте бота @HellBranchBot в Telegram\n"
+            "2. Отправьте ему команду `/start`\n"
+            "3. Следуйте инструкциям бота\n\n"
+            "После привязки вы будете получать уведомления в обоих мессенджерах!",
+            ephemeral=True
+        )
 
 @bot.command(name="balance_panel")
 async def create_balance_panel(ctx):
@@ -334,7 +353,8 @@ async def create_balance_panel(ctx):
         title="💰 Панель управления балансом",
         description="Нажмите на кнопки ниже, чтобы:\n\n"
                    "💰 **Мой баланс** - посмотреть свой текущий баланс\n"
-                   "🏆 **Топ баланса** - посмотреть топ участников по балансу",
+                   "🏆 **Топ баланса** - посмотреть топ участников по балансу\n"
+                   "🔗 **Привязать Telegram** - получать уведомления в Telegram",
         color=discord.Color.gold()
     )
     
@@ -482,6 +502,23 @@ def init_db():
                 party_id INTEGER NOT NULL,
                 member_id TEXT NOT NULL,
                 FOREIGN KEY(party_id) REFERENCES parties(party_id) ON DELETE CASCADE
+            )
+        """)
+        # Таблица для хранения связей Discord-Telegram
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS telegram_links (
+                discord_id TEXT PRIMARY KEY,
+                telegram_id TEXT NOT NULL,
+                telegram_username TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        # Таблица для временных кодов привязки
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS telegram_link_codes (
+                code TEXT PRIMARY KEY,
+                discord_id TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
         conn.commit()
@@ -939,7 +976,8 @@ async def issue_fine(ctx, user: discord.Member, amount: int, *, reason: str = "�
         # Логируем штраф в базу
         with sqlite3.connect(DB_NAME) as conn:
             c = conn.cursor()
-            c.execute("INSERT INTO fines (user_id, amount, reason) VALUES (?, ?, ?)", (str(user.id), amount, reason))
+            c.execute("INSERT INTO fines (user_id, amount, reason) VALUES (?, ?, ?)", 
+                     (str(user.id), amount, reason))
             fine_id = c.lastrowid
             conn.commit()
 
@@ -957,26 +995,25 @@ async def issue_fine(ctx, user: discord.Member, amount: int, *, reason: str = "�
         embed.add_field(name="**Выдал штраф:**", value=ctx.author.mention, inline=False)
         embed.add_field(name="**Номер штрафа:**", value=fine_id, inline=False)
 
+        # Отправляем в канал штрафов
         fine_channel = ctx.guild.get_channel(FINE_CHANNEL_ID)
         if fine_channel:
             await fine_channel.send(embed=embed)
 
+        # Добавляем роль штрафника
         fine_role = discord.utils.get(ctx.guild.roles, id=FINE_ROLE_ID)
         if fine_role and fine_role not in user.roles:
             await user.add_roles(fine_role)
 
-        # Пробуем отправить сообщение в личку нарушителю
-        try:
-            await user.send(embed=embed)
-            status_msg = messages["fine_sent_to_dm"].format(user_mention=user.mention)
-        except discord.Forbidden:
-            status_msg = messages["fine_failed_to_dm"].format(user_mention=user.mention)
+        # Отправляем уведомление пользователю
+        await send_notification(user.id, None, embed=embed)
 
+        # Логируем
         log_channel = ctx.guild.get_channel(LOG_CHANNEL_ID)
         if log_channel:
             await log_channel.send(f"✅ Штраф для {user.mention} отправлен в {fine_channel.mention}!")
-            await log_channel.send(status_msg)
 
+        await ctx.send("✅ Штраф успешно выдан.", ephemeral=True)
         logging.info(f"Штраф выдан: {user} | Сумма: {amount} | Причина: {reason} | Выдал: {ctx.author}")
 
     except Exception as e:
@@ -1056,49 +1093,71 @@ async def send_message(ctx, members: commands.Greedy[discord.Member], roles: com
         recipients.update(role.members)
 
     if not recipients:
-        await ctx.send("⚠️ Использование: `!send_message @пользователь1 @роль1 ... сообщение`")
+        await ctx.send("⚠️ Использование: `!m @пользователь1 @роль1 ... сообщение`")
         return
 
     sent_count = 0
+    failed_count = 0
 
     for member in recipients:
         if member.bot:
             continue  # Пропускаем ботов
 
         try:
-            await member.send(f"📩 **Сообщение от {ctx.author.display_name}:**\n{message_text}")
+            await send_notification(
+                member.id,
+                f"📩 **Сообщение от {ctx.author.display_name}:**\n{message_text}"
+            )
             sent_count += 1
-        except discord.Forbidden:
-            await ctx.send(f"⚠️ Не удалось отправить сообщение {member.mention}. Возможно, у него закрыты ЛС.")
+        except Exception as e:
+            failed_count += 1
+            logging.error(f"Ошибка отправки сообщения {member.name}: {e}")
 
+    response = []
     if sent_count:
-        await ctx.send(f"✅ Сообщение успешно отправлено {sent_count} пользователям.")
-    else:
-        await ctx.send("⚠️ Не удалось отправить сообщение ни одному пользователю.")
+        response.append(f"✅ Сообщение отправлено {sent_count} пользователям.")
+    if failed_count:
+        response.append(f"❌ Не удалось отправить сообщение {failed_count} пользователям.")
+    
+    await ctx.send("\n".join(response))
 
     try:
-        await asyncio.sleep(2)
-        await ctx.message.delete()  # Удаляет команду через 2 секунды
-    except discord.Forbidden:
+        await ctx.message.delete()
+    except:
         pass
 
-
-
-
-@bot.listen("on_message")
-async def delete_command_messages(message):
-    if message.author.bot:
-        return  # Игнорируем сообщения ботов
-
-    ctx = await bot.get_context(message)
-    if ctx.valid:
+@bot.command(name="link_telegram")
+async def link_telegram_cmd(ctx):
+    """Генерирует код для привязки Telegram"""
+    try:
+        code = await generate_link_code(ctx.author.id)
+        
+        embed = discord.Embed(
+            title="🔗 Привязка Telegram",
+            description=(
+                "Чтобы получать уведомления в Telegram, выполните следующие шаги:\n\n"
+                "1. Добавьте бота @HellBranchBot\n"
+                "2. Отправьте ему команду:\n"
+                f"```\n/link {code}\n```\n"
+                "⚠️ Код действителен 5 минут"
+            ),
+            color=discord.Color.blue()
+        )
+        
         try:
-            await asyncio.sleep(3)
-            await message.delete()  # Удаляем сообщение пользователя с командой
+            await ctx.author.send(embed=embed)
+            await ctx.send("✅ Инструкции отправлены вам в личные сообщения!", delete_after=5)
         except discord.Forbidden:
-            pass  # Игнорируем, если нет прав на удаление
-
-
+            await ctx.send("❌ Не удалось отправить вам личное сообщение. Пожалуйста, откройте личные сообщения.")
+            
+    except Exception as e:
+        logging.error(f"Ошибка в команде link_telegram: {e}")
+        await ctx.send("❌ Произошла ошибка при генерации кода.")
+    finally:
+        try:
+            await ctx.message.delete()
+        except:
+            pass
 
 @bot.command(name="help")
 async def help_command(ctx):
@@ -1217,5 +1276,204 @@ async def update_balances(ctx, *, data: str):
     except Exception as e:
         await ctx.send(f"❌ Ошибка при обработке данных: {str(e)}")
 
-# Запуск бота с использованием токена из переменных окружения
-bot.run(TOKEN)
+# Функции для работы с Telegram связями
+async def get_telegram_id(discord_id: str) -> str | None:
+    """Получает Telegram ID по Discord ID"""
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        c.execute("SELECT telegram_id FROM telegram_links WHERE discord_id = ?", (str(discord_id),))
+        result = c.fetchone()
+        return result[0] if result else None
+
+async def link_accounts(discord_id: str, telegram_id: int, telegram_username: str) -> bool:
+    """Связывает аккаунты Discord и Telegram"""
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        c.execute("""
+            INSERT OR REPLACE INTO telegram_links 
+            (discord_id, telegram_id, telegram_username) 
+            VALUES (?, ?, ?)
+        """, (str(discord_id), str(telegram_id), telegram_username))
+        conn.commit()
+    return True
+
+async def generate_link_code(discord_id: str) -> str:
+    """Генерирует временный код для привязки Telegram"""
+    code = secrets.token_hex(3)  # 6 символов
+    
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        # Удаляем старые коды для этого пользователя
+        c.execute("DELETE FROM telegram_link_codes WHERE discord_id = ?", (str(discord_id),))
+        # Добавляем новый код
+        c.execute(
+            "INSERT INTO telegram_link_codes (code, discord_id) VALUES (?, ?)",
+            (code, str(discord_id))
+        )
+        conn.commit()
+    
+    return code
+
+async def verify_link_code(code: str, telegram_id: int, telegram_username: str) -> bool:
+    """Проверяет код и создаёт связь Discord-Telegram"""
+    with sqlite3.connect(DB_NAME) as conn:
+        c = conn.cursor()
+        
+        # Проверяем код и получаем discord_id
+        c.execute("""
+        SELECT discord_id FROM telegram_link_codes 
+        WHERE code = ? AND created_at > datetime('now', '-5 minutes')
+        """, (code,))
+        result = c.fetchone()
+        
+        if not result:
+            return False
+            
+        discord_id = result[0]
+        
+        # Удаляем использованный код
+        c.execute("DELETE FROM telegram_link_codes WHERE code = ?", (code,))
+        
+        # Обновляем или создаём связь
+        c.execute("""
+        INSERT OR REPLACE INTO telegram_links 
+        (discord_id, telegram_id, telegram_username) 
+        VALUES (?, ?, ?)
+        """, (discord_id, str(telegram_id), telegram_username))
+        
+        conn.commit()
+        
+    return True
+
+# Функция для отправки уведомлений
+async def send_notification(discord_id: str, text: str | None = None, embed: discord.Embed | None = None) -> None:
+    """Отправляет уведомление пользователю в Discord и Telegram (если привязан)"""
+    try:
+        # Получаем пользователя Discord
+        user = bot.get_user(int(discord_id))
+        if not user:
+            return
+            
+        # Отправляем в Discord
+        try:
+            if text:
+                await user.send(text)
+            if embed:
+                await user.send(embed=embed)
+        except discord.Forbidden:
+            pass  # Пользователь закрыл ЛС
+            
+        # Проверяем привязку Telegram
+        telegram_id = await get_telegram_id(discord_id)
+        if not telegram_id:
+            return
+            
+        # Формируем текст для Telegram
+        telegram_text = text or ""
+        if embed:
+            if telegram_text:
+                telegram_text += "\n\n"
+            telegram_text += f"**{embed.title}**\n\n" if embed.title else ""
+            telegram_text += embed.description or ""
+            for field in embed.fields:
+                telegram_text += f"\n\n{field.name}\n{field.value}"
+                
+        # Отправляем в Telegram
+        if telegram_text:
+            try:
+                await telegram_bot.send_message(
+                    chat_id=telegram_id,
+                    text=telegram_text,
+                    parse_mode="Markdown"
+                )
+            except Exception as e:
+                logging.error(f"Ошибка отправки в Telegram {telegram_id}: {e}")
+                
+    except Exception as e:
+        logging.error(f"Ошибка в send_notification: {e}")
+
+# Обработчики команд Telegram
+@dp.message_handler(commands=['start'])
+async def handle_start(message: types.Message):
+    """Обработчик команды /start"""
+    await message.reply(
+        "👋 Привет! Я бот Hell Branch.\n\n"
+        "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
+        "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord.\n\n"
+        "Например: `/link abc123`"
+    )
+
+@dp.message_handler(commands=['link'])
+async def handle_link(message: types.Message):
+    """Обработчик команды /link для привязки аккаунтов"""
+    try:
+        # Получаем код из сообщения
+        parts = message.text.split()
+        if len(parts) != 2:
+            await message.reply(
+                "❌ Неверный формат команды.\n"
+                "Используйте: `/link КОД`\n"
+                "Например: `/link abc123`"
+            )
+            return
+            
+        code = parts[1].lower()
+        
+        # Проверяем код и создаём связь
+        if await verify_link_code(code, message.from_user.id, message.from_user.username):
+            await message.reply(
+                "✅ Аккаунты успешно связаны!\n"
+                "Теперь вы будете получать уведомления в Telegram."
+            )
+        else:
+            await message.reply(
+                "❌ Неверный или устаревший код.\n"
+                "Запросите новый код в Discord с помощью команды `!link_telegram`"
+            )
+            
+    except Exception as e:
+        logging.error(f"Ошибка в handle_link: {e}")
+        await message.reply("❌ Произошла ошибка при обработке команды.")
+
+@dp.message_handler(commands=['help'])
+async def handle_help(message: types.Message):
+    """Обработчик команды /help"""
+    await message.reply(
+        "🔍 Доступные команды:\n\n"
+        "/start - Начать работу с ботом\n"
+        "/link КОД - Привязать Discord аккаунт\n"
+        "/help - Показать это сообщение"
+    )
+
+# Запускаем Telegram бота
+async def start_telegram_bot():
+    """Запускает Telegram бота"""
+    try:
+        # Удаляем старые вебхуки
+        await telegram_bot.delete_webhook(drop_pending_updates=True)
+        # Запускаем поллинг
+        await telegram_bot.polling(non_stop=True)
+    except Exception as e:
+        logging.error(f"Ошибка запуска Telegram бота: {e}")
+
+# Добавляем запуск Telegram бота в основной цикл
+async def main():
+    """Основная функция запуска ботов"""
+    try:
+        # Запускаем оба бота
+        await asyncio.gather(
+            bot.start(DISCORD_TOKEN),
+            start_telegram_bot()
+        )
+    except Exception as e:
+        logging.error(f"Ошибка в main: {e}")
+    finally:
+        # Закрываем сессии
+        await asyncio.gather(
+            bot.close(),
+            telegram_bot.session.close()
+        )
+
+# Запускаем ботов
+if __name__ == "__main__":
+    asyncio.run(main())
