@@ -61,6 +61,70 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
+# Регистрируем хендлеры Telegram
+@dp.message(commands=['start'])
+async def handle_start(message: types.Message):
+    """Обработчик команды /start"""
+    await message.reply(
+        "👋 Привет! Я бот Hell Branch.\n\n"
+        "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
+        "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord.\n\n"
+        "Например: `/link abc123`"
+    )
+
+@dp.message(commands=['link'])
+async def handle_link(message: types.Message):
+    """Обработчик команды /link для привязки аккаунтов"""
+    try:
+        # Получаем код из сообщения
+        parts = message.text.split()
+        if len(parts) != 2:
+            await message.reply(
+                "❌ Неверный формат команды.\n"
+                "Используйте: `/link КОД`\n"
+                "Например: `/link abc123`"
+            )
+            return
+            
+        code = parts[1].lower()
+        
+        # Проверяем код и создаём связь
+        if await verify_link_code(code, message.from_user.id, message.from_user.username):
+            await message.reply(
+                "✅ Аккаунты успешно связаны!\n"
+                "Теперь вы будете получать уведомления в Telegram."
+            )
+        else:
+            await message.reply(
+                "❌ Неверный или устаревший код.\n"
+                "Запросите новый код в Discord с помощью команды `!link_telegram`"
+            )
+            
+    except Exception as e:
+        logging.error(f"Ошибка в handle_link: {e}")
+        await message.reply("❌ Произошла ошибка при обработке команды.")
+
+@dp.message(commands=['help'])
+async def handle_help(message: types.Message):
+    """Обработчик команды /help"""
+    await message.reply(
+        "🔍 Доступные команды:\n\n"
+        "/start - Начать работу с ботом\n"
+        "/link КОД - Привязать Discord аккаунт\n"
+        "/help - Показать это сообщение"
+    )
+
+# Запускаем Telegram бота
+async def start_telegram_bot():
+    """Запускает Telegram бота"""
+    try:
+        # Удаляем старые вебхуки
+        await telegram_bot.delete_webhook(drop_pending_updates=True)
+        # Запускаем поллинг
+        await dp.start_polling(telegram_bot)
+    except Exception as e:
+        logging.error(f"Ошибка запуска Telegram бота: {e}")
+
 # --- Модальные окна для управления балансом ---
 
 class DepositModal(Modal, title="Пополнить баланс"):
@@ -1391,89 +1455,26 @@ async def send_notification(discord_id: str, text: str | None = None, embed: dis
     except Exception as e:
         logging.error(f"Ошибка в send_notification: {e}")
 
-# Обработчики команд Telegram
-@dp.message(commands=['start'])
-async def handle_start(message: types.Message):
-    """Обработчик команды /start"""
-    await message.reply(
-        "👋 Привет! Я бот Hell Branch.\n\n"
-        "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
-        "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord.\n\n"
-        "Например: `/link abc123`"
-    )
-
-@dp.message(commands=['link'])
-async def handle_link(message: types.Message):
-    """Обработчик команды /link для привязки аккаунтов"""
-    try:
-        # Получаем код из сообщения
-        parts = message.text.split()
-        if len(parts) != 2:
-            await message.reply(
-                "❌ Неверный формат команды.\n"
-                "Используйте: `/link КОД`\n"
-                "Например: `/link abc123`"
-            )
-            return
-            
-        code = parts[1].lower()
-        
-        # Проверяем код и создаём связь
-        if await verify_link_code(code, message.from_user.id, message.from_user.username):
-            await message.reply(
-                "✅ Аккаунты успешно связаны!\n"
-                "Теперь вы будете получать уведомления в Telegram."
-            )
-        else:
-            await message.reply(
-                "❌ Неверный или устаревший код.\n"
-                "Запросите новый код в Discord с помощью команды `!link_telegram`"
-            )
-            
-    except Exception as e:
-        logging.error(f"Ошибка в handle_link: {e}")
-        await message.reply("❌ Произошла ошибка при обработке команды.")
-
-@dp.message(commands=['help'])
-async def handle_help(message: types.Message):
-    """Обработчик команды /help"""
-    await message.reply(
-        "🔍 Доступные команды:\n\n"
-        "/start - Начать работу с ботом\n"
-        "/link КОД - Привязать Discord аккаунт\n"
-        "/help - Показать это сообщение"
-    )
-
-# Запускаем Telegram бота
-async def start_telegram_bot():
-    """Запускает Telegram бота"""
-    try:
-        # Регистрируем обработчики
-        dp.include_routers(handle_start, handle_link, handle_help)
-        # Удаляем старые вебхуки
-        await telegram_bot.delete_webhook(drop_pending_updates=True)
-        # Запускаем поллинг
-        await dp.start_polling(telegram_bot)
-    except Exception as e:
-        logging.error(f"Ошибка запуска Telegram бота: {e}")
-
 # Добавляем запуск Telegram бота в основной цикл
 async def main():
     """Основная функция запуска ботов"""
     try:
-        # Запускаем оба бота
-        await asyncio.gather(
-            bot.start(DISCORD_TOKEN),
-            start_telegram_bot()
-        )
+        # Запускаем оба бота параллельно
+        discord_task = asyncio.create_task(bot.start(DISCORD_TOKEN))
+        telegram_task = asyncio.create_task(start_telegram_bot())
+        
+        # Ждем завершения обоих ботов
+        await asyncio.gather(discord_task, telegram_task)
+    except KeyboardInterrupt:
+        # Корректное завершение при Ctrl+C
+        logging.info("Получен сигнал завершения работы")
     except Exception as e:
         logging.error(f"Ошибка в main: {e}")
     finally:
         # Закрываем сессии
-        await asyncio.gather(
-            bot.close(),
-            telegram_bot.session.close()
-        )
+        if not telegram_bot.session.closed:
+            await telegram_bot.session.close()
+        await bot.close()
 
 # Запускаем ботов
 if __name__ == "__main__":
