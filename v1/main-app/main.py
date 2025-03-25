@@ -1132,6 +1132,22 @@ async def help_command(ctx):
     )
     await ctx.send(help_message)
 
+@bot.command(name="get_user_id")
+async def get_user_id(ctx, username: str):
+    """Временная команда для получения ID пользователя по его нику в Discord"""
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.send("❌ У вас нет прав для использования этой команды.")
+        return
+        
+    members = ctx.guild.members
+    found = False
+    for member in members:
+        if username.lower() in member.name.lower() or (member.nick and username.lower() in member.nick.lower()):
+            await ctx.send(f"Найден пользователь: {member.name}#{member.discriminator} (ID: {member.id})")
+            found = True
+    
+    if not found:
+        await ctx.send(f"❌ Пользователь с ником '{username}' не найден.")
 
 # Запуск бота с использованием токена из переменных окружения
 bot.run(TOKEN)
