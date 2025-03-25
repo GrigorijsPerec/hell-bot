@@ -417,10 +417,10 @@ class TelegramView(View):
 
     @discord.ui.button(label="🔗 Привязать Telegram", style=discord.ButtonStyle.success)
     async def link_telegram_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.defer(ephemeral=True)
         ctx = await bot.get_context(interaction.message)
         ctx.author = interaction.user
         await bot.get_command("link_telegram").callback(ctx)
-        await interaction.response.defer(ephemeral=True)
 
 @bot.command(name="telegram_panel")
 async def create_telegram_panel(ctx):
