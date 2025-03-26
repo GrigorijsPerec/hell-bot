@@ -292,8 +292,8 @@ class FineModal(Modal, title="Выдать штраф"):
             except discord.Forbidden:
                 status_msg = messages["fine_failed_to_dm"].format(user_mention=member_obj.mention)
 
-            # Логируем
-            log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+            # Отправляем сообщение в лог-канал
+            log_channel = bot.get_channel(LOG_CHANNEL_ID)
             if log_channel:
                 await log_channel.send(f"✅ Штраф для {member_obj.mention} отправлен в {fine_channel.mention}!")
                 await log_channel.send(status_msg)
@@ -401,15 +401,23 @@ class BalanceView(View):
         current_balance = balance_manager.get_balance(user.id)
         response = f"💰 {user.mention}, ваш баланс: {current_balance} серебра."
         await interaction.response.send_message(response, ephemeral=True)
+        await self.log_button_action(interaction, response)
 
     @discord.ui.button(label="🏆 Топ баланса", style=discord.ButtonStyle.secondary)
     async def balance_top_button(self, interaction: discord.Interaction, button: Button):
-        top_list = balance_manager.top_balances()
-        msg = "🏆 Топ участников по балансу:\n\n"
-        for i, (member_id, bal, nickname) in enumerate(top_list[:40], 1):
-            name = nickname if nickname else str(member_id)
-            msg += f"{i}. {name}: {bal} серебра\n"
-        await interaction.response.send_message(msg, ephemeral=True)
+        top_balances = balance_manager.top_balances(top_n=10)
+        response = "🏆 **Топ-10 участников по балансу:**\n\n"
+        for i, (user_id, balance) in enumerate(top_balances, 1):
+            user = interaction.guild.get_member(user_id)
+            if user:
+                response += f"{i}. {user.mention}: {balance} серебра\n"
+        await interaction.response.send_message(response, ephemeral=True)
+        await self.log_button_action(interaction, "Запрошен топ баланса")
+
+    @discord.ui.button(label="🔄 Перевести", style=discord.ButtonStyle.success)
+    async def transfer_button(self, interaction: discord.Interaction, button: Button):
+        await interaction.response.send_modal(TransferModal())
+        await self.log_button_action(interaction, "Открыто модальное окно перевода средств")
 
 class TelegramView(View):
     def __init__(self):
@@ -490,11 +498,6 @@ class CommandControlPanel(View):
     async def withdraw_button(self, interaction: discord.Interaction, button: Button):
         await interaction.response.send_modal(WithdrawModal())
         await self.log_button_action(interaction, "Открыто модальное окно снятия баланса.")
-
-    @discord.ui.button(label="🔄 Перевести", style=discord.ButtonStyle.primary)
-    async def transfer_button(self, interaction: discord.Interaction, button: Button):
-        await interaction.response.send_modal(TransferModal())
-        await self.log_button_action(interaction, "Открыто модальное окно перевода средств.")
 
     @discord.ui.button(label="🕒 История баланса", style=discord.ButtonStyle.secondary)
     async def history_button(self, interaction: discord.Interaction, button: Button):
