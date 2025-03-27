@@ -298,6 +298,9 @@ class FineModal(Modal, title="Выдать штраф"):
                 await log_channel.send(f"✅ Штраф для {member_obj.mention} отправлен в {fine_channel.mention}!")
                 await log_channel.send(status_msg)
 
+            # Отправляем уведомление в Telegram
+            await send_notification(str(member_obj.id), embed=embed)
+
             await interaction.response.send_message("✅ Штраф успешно выдан.", ephemeral=True)
             logging.info(f"Штраф выдан: {member_obj} | Сумма: {amount_value} | Причина: {self.reason.value} | Выдал: {interaction.user}")
 
@@ -1201,14 +1204,17 @@ async def send_message(ctx, members: commands.Greedy[discord.Member], roles: com
 
     sent_count = 0
     failed_count = 0
+    telegram_sent = 0
+    telegram_failed = 0
 
     for member in recipients:
         if member.bot:
             continue  # Пропускаем ботов
 
         try:
+            # Отправляем уведомление через send_notification
             await send_notification(
-                member.id,
+                str(member.id),
                 f"📩 **Сообщение от {ctx.author.display_name}:**\n{message_text}"
             )
             sent_count += 1
