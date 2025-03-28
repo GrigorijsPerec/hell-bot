@@ -52,7 +52,7 @@ telegram_bot = TelegramBot(
     token=TELEGRAM_TOKEN,
     default=DefaultBotProperties(parse_mode="HTML")
 )
-dp = Dispatcher(telegram_bot)
+dp = Dispatcher()
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
 intents = discord.Intents.default()
