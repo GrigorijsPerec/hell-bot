@@ -50,9 +50,9 @@ LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда �
 # Инициализация Telegram бота
 telegram_bot = TelegramBot(
     token=TELEGRAM_TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN)
+    parse_mode="HTML"
 )
-dp = Dispatcher()
+dp = Dispatcher(telegram_bot)
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
 intents = discord.Intents.default()
@@ -67,44 +67,40 @@ bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
 # Регистрируем хендлеры Telegram
-@dp.message(Command('start'))
-async def handle_start(message: types.Message):
+@dp.message_handler(commands=['start'])
+async def start_command(message: types.Message):
     """Обработчик команды /start"""
     try:
         await message.answer(
-            "👋 Привет! Я бот Hell Branch.\n\n"
-            "Чтобы получать уведомления здесь, привяжите свой Discord аккаунт "
-            "с помощью команды `/link КОД`, где КОД - это код, который вы получили в Discord."
-            "Например: `/link abc123`\n\n"
-
-            "Переходите в наш телеграм канал: https://t.me/+ActeXmEZK9U4OWUy\n\n"
-            "После привязки вы будете получать уведомления в обоих мессенджерах!",  
-            
+            "👋 Привет! Я бот для привязки Telegram к Discord.\n\n"
+            "Чтобы привязать аккаунт, выполните следующие шаги:\n"
+            "1. В Discord используйте команду `!link_telegram`\n"
+            "2. Скопируйте полученный код\n"
+            "3. Отправьте его мне в формате: `/link КОД`\n\n"
+            "После этого вы будете получать уведомления в Telegram."
         )
         logging.info(f"Telegram: Обработана команда /start от пользователя {message.from_user.id}")
     except Exception as e:
-        logging.error(f"Ошибка в handle_start: {e}")
+        logging.error(f"Ошибка в обработчике /start: {e}")
 
-@dp.message(Command('link'))
-async def handle_link(message: types.Message):
-    """Обработчик команды /link для привязки аккаунтов"""
+@dp.message_handler(commands=['link'])
+async def link_command(message: types.Message):
+    """Обработчик команды /link"""
     try:
-        # Получаем код из сообщения
-        parts = message.text.split()
-        if len(parts) != 2:
-            await message.answer(
-                "❌ Неверный формат команды.\n"
-                "Используйте: `/link КОД`\n"
-                "Например: `/link abc123`"
-            )
+        code = message.get_args()
+        if not code:
+            await message.answer("❌ Пожалуйста, укажите код в формате: `/link КОД`")
             return
-            
-        code = parts[1].lower()
-        
-        # Проверяем код и создаём связь
-        if await verify_link_code(code, message.from_user.id, message.from_user.username):
+
+        success = await verify_link_code(
+            code,
+            message.from_user.id,
+            message.from_user.username or str(message.from_user.id)
+        )
+
+        if success:
             await message.answer(
-                "✅ Аккаунты успешно связаны!\n"
+                "✅ Ваш аккаунт успешно привязан к Discord!\n"
                 "Теперь вы будете получать уведомления в Telegram."
             )
             logging.info(f"Telegram: Успешная привязка аккаунта для пользователя {message.from_user.id}")
@@ -113,10 +109,9 @@ async def handle_link(message: types.Message):
                 "❌ Неверный или устаревший код.\n"
                 "Запросите новый код в Discord с помощью команды `!link_telegram`"
             )
-            
     except Exception as e:
-        logging.error(f"Ошибка в handle_link: {e}")
-        await message.answer("❌ Произошла ошибка при обработке команды.")
+        logging.error(f"Ошибка в обработчике /link: {e}")
+        await message.answer("❌ Произошла ошибка при привязке аккаунта.")
 
 @dp.message(Command('help'))
 async def handle_help(message: types.Message):
@@ -1413,37 +1408,48 @@ async def generate_link_code(discord_id: str) -> str:
 
 async def verify_link_code(code: str, telegram_id: int, telegram_username: str) -> bool:
     """Проверяет код и создаёт связь Discord-Telegram"""
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        
-        # Проверяем код и получаем discord_id
-        c.execute("""
-        SELECT discord_id FROM telegram_link_codes 
-        WHERE code = ? AND created_at > datetime('now', '-5 minutes')
-        """, (code,))
-        result = c.fetchone()
-        
-        if not result:
-            return False
-            
-        discord_id = result[0]
-        
-        # Удаляем использованный код
-        c.execute("DELETE FROM telegram_link_codes WHERE code = ?", (code,))
-        
-        # Обновляем или создаём связь
-        c.execute("""
-        INSERT OR REPLACE INTO telegram_links 
-        (discord_id, telegram_id, telegram_username) 
-        VALUES (?, ?, ?)
-        """, (discord_id, str(telegram_id), telegram_username))
-        
-        conn.commit()
-        
-    return True
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            c = conn.cursor()
+            # Получаем discord_id по коду
+            c.execute("""
+                SELECT discord_id FROM telegram_link_codes
+                WHERE code = ? AND created_at > datetime('now', '-5 minutes')
+            """, (code,))
+            result = c.fetchone()
+            if not result:
+                return False
+
+            discord_id = result[0]
+
+            # Удаляем использованный код
+            c.execute("DELETE FROM telegram_link_codes WHERE code = ?", (code,))
+
+            # Создаём связь
+            c.execute("""
+                INSERT OR REPLACE INTO telegram_links
+                (discord_id, telegram_id, telegram_username)
+                VALUES (?, ?, ?)
+            """, (discord_id, str(telegram_id), telegram_username))
+            conn.commit()
+
+            # Отправляем подтверждение в Telegram
+            try:
+                await dp.bot.send_message(
+                    chat_id=telegram_id,
+                    text="✅ Ваш аккаунт успешно привязан к Discord!",
+                    parse_mode="HTML"
+                )
+            except Exception as e:
+                logging.error(f"Ошибка отправки подтверждения в Telegram: {e}")
+
+            return True
+    except Exception as e:
+        logging.error(f"Ошибка при верификации кода: {e}")
+        return False
 
 # Функция для отправки уведомлений
-async def send_notification(discord_id: str, text: str | None = None, embed: discord.Embed | None = None) -> None:
+async def send_notification(discord_id: str, text: str = None, embed: discord.Embed = None):
     """Отправляет уведомление пользователю в Discord и Telegram (если привязан)"""
     try:
         # Получаем пользователя Discord
@@ -1464,30 +1470,30 @@ async def send_notification(discord_id: str, text: str | None = None, embed: dis
         telegram_id = await get_telegram_id(discord_id)
         if not telegram_id:
             return
-            
+
         # Формируем текст для Telegram
         telegram_text = text or ""
         if embed:
             if telegram_text:
                 telegram_text += "\n\n"
-            telegram_text += f"**{embed.title}**\n\n" if embed.title else ""
+            telegram_text += f"<b>{embed.title}</b>\n\n" if embed.title else ""
             telegram_text += embed.description or ""
             for field in embed.fields:
                 telegram_text += f"\n\n{field.name}\n{field.value}"
-                
+
         # Отправляем в Telegram
         if telegram_text:
             try:
-                await telegram_bot.send_message(
+                await dp.bot.send_message(
                     chat_id=telegram_id,
                     text=telegram_text,
-                    parse_mode="Markdown"
+                    parse_mode="HTML"
                 )
             except Exception as e:
                 logging.error(f"Ошибка отправки в Telegram {telegram_id}: {e}")
-                
+
     except Exception as e:
-        logging.error(f"Ошибка в send_notification: {e}")
+        logging.error(f"Ошибка отправки уведомления для {discord_id}: {e}")
 
 # Добавляем запуск Telegram бота в основной цикл
 async def main():
