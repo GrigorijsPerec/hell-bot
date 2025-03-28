@@ -50,7 +50,7 @@ LOG_ALL_CHANNEL_ID = config["LOG_ALL_CHANNEL_ID"]  # ID канала, куда �
 # Инициализация Telegram бота
 telegram_bot = TelegramBot(
     token=TELEGRAM_TOKEN,
-    parse_mode="HTML"
+    default=DefaultBotProperties(parse_mode="HTML")
 )
 dp = Dispatcher(telegram_bot)
 
