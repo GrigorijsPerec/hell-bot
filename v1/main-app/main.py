@@ -10,10 +10,9 @@ import asyncio
 from discord.ui import View, Button, Modal, TextInput
 import secrets
 import aiohttp
-from aiogram import Bot as TelegramBot, Dispatcher, types
-from aiogram.enums import ParseMode
+from aiogram import Bot as TelegramBot, Dispatcher, types, Router
+from aiogram.filters.command import Command
 from aiogram.client.default import DefaultBotProperties
-from aiogram.filters import Command
 
 # Загрузка переменных окружения из файла .env (убедитесь, что файл .env добавлен в .gitignore)
 load_dotenv()
@@ -52,7 +51,11 @@ telegram_bot = TelegramBot(
     token=TELEGRAM_TOKEN,
     default=DefaultBotProperties(parse_mode="HTML")
 )
+
+# Создаем роутер и диспетчер
+router = Router()
 dp = Dispatcher()
+dp.include_router(router)
 
 # Настройка намерений (intents) для получения необходимых событий от Discord
 intents = discord.Intents.default()
@@ -67,7 +70,7 @@ bot.remove_command("help")
 DB_NAME = "../bot.db"  # Имя файла базы данных
 
 # Регистрируем хендлеры Telegram
-@dp.message_handler(commands=['start'])
+@router.message(Command('start'))
 async def start_command(message: types.Message):
     """Обработчик команды /start"""
     try:
@@ -83,11 +86,11 @@ async def start_command(message: types.Message):
     except Exception as e:
         logging.error(f"Ошибка в обработчике /start: {e}")
 
-@dp.message_handler(commands=['link'])
+@router.message(Command('link'))
 async def link_command(message: types.Message):
     """Обработчик команды /link"""
     try:
-        code = message.get_args()
+        code = message.text.split(maxsplit=1)[1] if len(message.text.split()) > 1 else None
         if not code:
             await message.answer("❌ Пожалуйста, укажите код в формате: `/link КОД`")
             return
@@ -113,7 +116,7 @@ async def link_command(message: types.Message):
         logging.error(f"Ошибка в обработчике /link: {e}")
         await message.answer("❌ Произошла ошибка при привязке аккаунта.")
 
-@dp.message(Command('help'))
+@router.message(Command('help'))
 async def handle_help(message: types.Message):
     """Обработчик команды /help"""
     try:
@@ -190,8 +193,6 @@ class HistoryModal(Modal, title="История баланса"):
     member = TextInput(label="ID или @упоминание (необязательно)", required=False)
 
     async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
-
         member_text = self.member.value.strip()
         member_obj = None
 
@@ -211,6 +212,12 @@ class HistoryModal(Modal, title="История баланса"):
         if not member_obj:
             await interaction.response.send_message("❌ Пользователь не найден.", ephemeral=True)
             return
+
+        # Создаем новый контекст
+        ctx = await bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.guild = interaction.guild
+        ctx.channel = interaction.channel
 
         await bot.get_command("balance history").callback(ctx, member_obj)
         await interaction.response.send_message("📜 История транзакций отправлена.", ephemeral=True)
@@ -247,6 +254,12 @@ class FineModal(Modal, title="Выдать штраф"):
             if not await has_role(interaction.user, FINANCIER_ROLE_ID):
                 await interaction.response.send_message("❌ У вас нет прав для выдачи штрафа.", ephemeral=True)
                 return
+
+            # Создаем новый контекст
+            ctx = await bot.get_context(interaction.message)
+            ctx.author = interaction.user
+            ctx.guild = interaction.guild
+            ctx.channel = interaction.channel
 
             # Логируем штраф в базу
             with sqlite3.connect(DB_NAME) as conn:
@@ -360,7 +373,6 @@ class SendMessageModal(Modal, title="Отправить ЛС"):
     text = TextInput(label="Сообщение", style=discord.TextStyle.paragraph)
 
     async def on_submit(self, interaction: discord.Interaction):
-        ctx = await bot.get_context(interaction.message)
         member_text = self.member_id.value.strip()
         member_obj = None
 
@@ -378,9 +390,15 @@ class SendMessageModal(Modal, title="Отправить ЛС"):
             await interaction.response.send_message("❌ Ошибка: Пользователь не найден.", ephemeral=True)
             return
 
+        # Создаем новый контекст
+        ctx = await bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.guild = interaction.guild
+        ctx.channel = interaction.channel
+
         # Пробуем отправить сообщение в ЛС
         try:
-            await member_obj.send(f"📩 **Сообщение от {interaction.user.display_name}:**\n{self.text.value}")
+            await member_obj.send(f"📩 Сообщение от {interaction.user.display_name}:\n{self.text.value}")
             await interaction.response.send_message("✅ Сообщение успешно отправлено.", ephemeral=True)
         except discord.Forbidden:
             await interaction.response.send_message(f"⚠️ {member_obj.mention} закрыл ЛС, отправка невозможна.", ephemeral=True)
@@ -393,6 +411,12 @@ class BalanceView(View):
     def __init__(self):
         super().__init__(timeout=None)
 
+    async def log_button_action(self, interaction, message):
+        """Функция для логирования действий кнопок"""
+        log_channel = bot.get_channel(LOG_ALL_CHANNEL_ID)
+        if log_channel:
+            await log_channel.send(f"📌 **Кнопка нажата:** {message}")
+
     @discord.ui.button(label="💰 Мой баланс", style=discord.ButtonStyle.primary)
     async def my_balance_button(self, interaction: discord.Interaction, button: Button):
         user = interaction.user
@@ -403,12 +427,14 @@ class BalanceView(View):
 
     @discord.ui.button(label="🏆 Топ баланса", style=discord.ButtonStyle.secondary)
     async def balance_top_button(self, interaction: discord.Interaction, button: Button):
-        top_balances = balance_manager.top_balances(top_n=10)
-        response = "🏆 **Топ-10 участников по балансу:**\n\n"
-        for i, (user_id, balance) in enumerate(top_balances, 1):
-            user = interaction.guild.get_member(user_id)
+        top_balances = balance_manager.top_balances(top_n=100)
+        response = "🏆 **Топ-100 участников по балансу:**\n\n"
+        for i, (user_id, balance, nickname) in enumerate(top_balances, 1):
+            user = interaction.guild.get_member(int(user_id))
             if user:
-                response += f"{i}. {user.mention}: {balance} серебра\n"
+                response += f"{i}. {user.mention}: {balance:,} серебра\n"
+            else:
+                response += f"{i}. {nickname or user_id}: {balance:,} серебра\n"
         await interaction.response.send_message(response, ephemeral=True)
         await self.log_button_action(interaction, "Запрошен топ баланса")
 
@@ -1218,10 +1244,10 @@ async def send_message(ctx, members: commands.Greedy[discord.Member], roles: com
             logging.error(f"Ошибка отправки сообщения {member.name}: {e}")
 
     response = []
-    if sent_count:
-        response.append(f"✅ Сообщение отправлено {sent_count} пользователям.")
-    if failed_count:
-        response.append(f"❌ Не удалось отправить сообщение {failed_count} пользователям.")
+#    if sent_count:
+#        response.append(f"✅ Сообщение отправлено {sent_count} пользователям.")
+#    if failed_count:
+#        response.append(f"❌ Не удалось отправить сообщение {failed_count} пользователям.")
     
     await ctx.send("\n".join(response))
 
@@ -1246,7 +1272,15 @@ async def link_telegram_cmd(ctx):
                 "⚠️ Код действителен 5 минут"
             ),
             color=discord.Color.blue()
-        )            
+        )
+        
+        # Отправляем сообщение в личные сообщения
+        try:
+            await ctx.author.send(embed=embed)
+            await ctx.send("✅ Инструкция отправлена в личные сообщения!", ephemeral=True)
+        except discord.Forbidden:
+            await ctx.send("❌ Не удалось отправить сообщение в личные сообщения. Проверьте настройки приватности.", ephemeral=True)
+            
     except Exception as e:
         logging.error(f"Ошибка в команде link_telegram: {e}")
         await ctx.send("❌ Произошла ошибка при генерации кода.", ephemeral=True)
@@ -1307,6 +1341,74 @@ async def get_user_id(ctx, username: str):
 @bot.command(name="update_balances")
 @commands.has_permissions(administrator=True)
 async def update_balances(ctx, *, data: str):
+    """Обновляет балансы пользователей из списка"""
+    try:
+        # Разбиваем данные по строкам или точкам с запятой
+        lines = [line.strip() for line in data.replace(';', '\n').split('\n')]
+        updated = 0
+        errors = []
+
+        for line in lines:
+            try:
+                # Пропускаем пустые строки
+                if not line.strip():
+                    continue
+                
+                # Парсим строку
+                if ':' not in line:
+                    errors.append(f"Неверный формат строки (нет ':'): {line}")
+                    continue
+
+                # Разделяем на имя и сумму
+                name_part, amount_str = line.split(':', 1)
+                
+                # Очищаем сумму от пробелов и получаем число
+                amount = int(amount_str.strip().replace(' ', ''))
+                
+                # Получаем имя пользователя
+                username = name_part.split('|')[0].strip().strip('@')
+                
+                # Ищем пользователя
+                member = None
+                for guild_member in ctx.guild.members:
+                    if username.lower() in guild_member.name.lower() or (guild_member.nick and username.lower() in guild_member.nick.lower()):
+                        member = guild_member
+                        break
+                    # Проверяем ID пользователя
+                    if username.isdigit() and str(guild_member.id) == username:
+                        member = guild_member
+                        break
+
+                if member:
+                    # Устанавливаем новый баланс (сначала обнуляем, потом добавляем)
+                    balance_manager.withdraw(member.id, balance_manager.get_balance(member.id), nickname=member.display_name, by=ctx.author.id, note="Balance reset")
+                    balance_manager.deposit(member.id, amount, nickname=member.display_name, by=ctx.author.id, note="Balance update")
+                    updated += 1
+                else:
+                    errors.append(f"Пользователь не найден: {username}")
+
+            except ValueError as e:
+                errors.append(f"Ошибка в строке '{line}': {str(e)}")
+            except Exception as e:
+                errors.append(f"Непредвиденная ошибка в строке '{line}': {str(e)}")
+
+        # Отправляем отчет
+        report = f"✅ Обновлено балансов: {updated}\n"
+        if errors:
+            report += "\n❌ Ошибки:\n" + "\n".join(errors)
+        
+        await ctx.send(report)
+
+    except Exception as e:
+        await ctx.send(f"❌ Ошибка при обработке данных: {str(e)}")
+
+@bot.command(name="balance_update")
+@commands.has_permissions(administrator=True)
+async def balance_update(ctx, *, data: str):
+    """Обновляет балансы пользователей из предустановленного списка"""
+    await update_balances(ctx, data=data)
+
+async def update_balances(ctx, data=None):
     """Обновляет балансы пользователей из списка"""
     try:
         # Разбиваем данные по строкам или точкам с запятой
@@ -1484,38 +1586,128 @@ async def send_notification(discord_id: str, text: str = None, embed: discord.Em
         # Отправляем в Telegram
         if telegram_text:
             try:
-                await dp.bot.send_message(
+                await telegram_bot.send_message(
                     chat_id=telegram_id,
                     text=telegram_text,
                     parse_mode="HTML"
                 )
             except Exception as e:
-                logging.error(f"Ошибка отправки в Telegram {telegram_id}: {e}")
+                logging.error(f"Ошибка отправки сообщения в Telegram: {e}")
+                pass
 
     except Exception as e:
         logging.error(f"Ошибка отправки уведомления для {discord_id}: {e}")
 
 # Добавляем запуск Telegram бота в основной цикл
 async def main():
-    """Основная функция запуска ботов"""
     try:
-        # Запускаем оба бота параллельно
-        discord_task = asyncio.create_task(bot.start(DISCORD_TOKEN))
+        # Запускаем Telegram бота
         telegram_task = asyncio.create_task(start_telegram_bot())
         
-        # Ждем завершения обоих ботов
-        await asyncio.gather(discord_task, telegram_task)
-    except KeyboardInterrupt:
-        # Корректное завершение при Ctrl+C
-        logging.info("Получен сигнал завершения работы")
+        # Запускаем Discord бота
+        discord_task = asyncio.create_task(bot.start(DISCORD_TOKEN))
+        
+        # Ждем завершения обоих задач
+        await asyncio.gather(telegram_task, discord_task)
     except Exception as e:
-        logging.error(f"Ошибка в main: {e}")
-    finally:
-        # Закрываем сессии
-        if not telegram_bot.session.closed:
-            await telegram_bot.session.close()
-        await bot.close()
+        logging.error(f"Ошибка при запуске ботов: {e}")
+        raise
 
-# Запускаем ботов
+@bot.command(name="reset_all_balances")
+@commands.has_permissions(administrator=True)
+async def reset_all_balances(ctx):
+    """Обнуляет балансы всех пользователей"""
+    try:
+        # Получаем всех пользователей с ненулевым балансом
+        with sqlite3.connect(DB_NAME) as conn:
+            c = conn.cursor()
+            c.execute("SELECT member_id, balance FROM balances WHERE balance != 0")
+            users = c.fetchall()
+            
+            if not users:
+                await ctx.send("ℹ️ Нет пользователей с ненулевым балансом.")
+                return
+                
+            # Обнуляем балансы
+            for user_id, balance in users:
+                balance_manager.withdraw(
+                    user_id, 
+                    balance, 
+                    nickname=ctx.guild.get_member(int(user_id)).display_name if ctx.guild.get_member(int(user_id)) else str(user_id),
+                    by=ctx.author.id,
+                    note="Mass balance reset"
+                )
+            
+            await ctx.send(f"✅ Обнулены балансы {len(users)} пользователей.")
+            logging.info(f"Массовое обнуление балансов выполнено администратором {ctx.author}")
+            
+    except Exception as e:
+        error_msg = f"❌ Ошибка при обнулении балансов: {str(e)}"
+        await ctx.send(error_msg)
+        logging.error(error_msg)
+
+@router.message()
+async def handle_telegram_message(message: types.Message):
+    """Обработчик всех сообщений из Telegram"""
+    try:
+        # Получаем Discord ID пользователя по Telegram ID
+        with sqlite3.connect(DB_NAME) as conn:
+            c = conn.cursor()
+            c.execute("SELECT discord_id FROM telegram_links WHERE telegram_id = ?", (str(message.from_user.id),))
+            result = c.fetchone()
+            
+            if not result:
+                return  # Если пользователь не привязан, игнорируем сообщение
+                
+            discord_id = result[0]
+            
+            # Получаем объект пользователя Discord
+            guild = bot.guilds[0]  # Получаем первый сервер
+            discord_user = guild.get_member(int(discord_id))
+            
+            if not discord_user:
+                return
+                
+            # Получаем канал для логов ЛС
+            log_channel = guild.get_channel(DM_LOG_CHANNEL_ID)
+            if not log_channel:
+                return
+                
+            # Создаем embed для сообщения
+            embed = discord.Embed(
+                title="📩 Новое сообщение из Telegram",
+                description=message.text or "*Нет текста*",
+                color=discord.Color.blue(),
+                timestamp=message.date
+            )
+            embed.set_author(
+                name=f"{discord_user.display_name} (Telegram: @{message.from_user.username})",
+                icon_url=discord_user.avatar.url if discord_user.avatar else None
+            )
+            
+            # Если есть фото
+            if message.photo:
+                photo = message.photo[-1]  # Берем самое большое фото
+                embed.set_image(url=photo.file_id)
+                
+            # Если есть документ
+            if message.document:
+                embed.add_field(
+                    name="Документ",
+                    value=f"📎 {message.document.file_name}",
+                    inline=False
+                )
+                
+            # Отправляем в канал логов
+            await log_channel.send(embed=embed)
+            
+    except Exception as e:
+        logging.error(f"Ошибка при обработке сообщения из Telegram: {e}")
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logging.info("Боты остановлены пользователем")
+    except Exception as e:
+        logging.error(f"Критическая ошибка: {e}")
